@@ -40,10 +40,12 @@ namespace GenieClient
         {
             if (!Information.IsNothing(m_FormMain))
             {
-                TextBoxMonoFont.Text = GetFontName(m_FormMain.m_oGlobals.Config.MonoFont);
-                TextBoxMonoFont.Tag = m_FormMain.m_oGlobals.Config.MonoFont;
-                TextBoxInputFont.Text = GetFontName(m_FormMain.m_oGlobals.Config.InputFont);
-                TextBoxInputFont.Tag = m_FormMain.m_oGlobals.Config.InputFont;
+                var monoFont = m_FormMain.m_oGlobals.Config.MonoFont.ToDrawingFont();
+                TextBoxMonoFont.Text = GetFontName(monoFont);
+                TextBoxMonoFont.Tag = monoFont;
+                var inputFont = m_FormMain.m_oGlobals.Config.InputFont.ToDrawingFont();
+                TextBoxInputFont.Text = GetFontName(inputFont);
+                TextBoxInputFont.Tag = inputFont;
             }
         }
 
@@ -115,12 +117,12 @@ namespace GenieClient
             {
                 if (!Information.IsNothing(TextBoxMonoFont.Tag))
                 {
-                    m_FormMain.m_oGlobals.Config.MonoFont = (Font)TextBoxMonoFont.Tag;
+                    m_FormMain.m_oGlobals.Config.MonoFont = ((Font)TextBoxMonoFont.Tag).ToGenieFont();
                 }
 
                 if (!Information.IsNothing(TextBoxInputFont.Tag))
                 {
-                    m_FormMain.m_oGlobals.Config.InputFont = (Font)TextBoxInputFont.Tag;
+                    m_FormMain.m_oGlobals.Config.InputFont = ((Font)TextBoxInputFont.Tag).ToGenieFont();
                 }
             }
         }

@@ -10,9 +10,12 @@ namespace GenieClient
     {
         public static Action<string, string, string> ErrorHandler { get; set; }
 
+        public static event Action<string, string, string> EventCoreError;
+
         public static void Error(string section, string message, string description = null)
         {
             ErrorHandler?.Invoke(section, message, description);
+            EventCoreError?.Invoke(section, message, description);
         }
     }
 }

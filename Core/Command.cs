@@ -541,7 +541,7 @@ namespace GenieClient.Genie
                                                         case "macros":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                oGlobals.MacroList.Save();
+                                                                ((Macros)oGlobals.MacroList).Save();
                                                                 break;
                                                             }
 
@@ -617,7 +617,7 @@ namespace GenieClient.Genie
                                                                 EchoText("Settings Saved" + System.Environment.NewLine);
                                                                 oGlobals.Config.Save(oGlobals.Config.ConfigDir + @"\settings.cfg");
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                oGlobals.MacroList.Save();
+                                                                ((Macros)oGlobals.MacroList).Save();
                                                                 EchoText("Substitutes Saved" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Save(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
                                                                 EchoText("Gags Saved" + System.Environment.NewLine);
@@ -703,7 +703,7 @@ namespace GenieClient.Genie
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                oGlobals.MacroList.Load();
+                                                                ((Macros)oGlobals.MacroList).Load();
                                                                 break;
                                                             }
 
@@ -791,7 +791,7 @@ namespace GenieClient.Genie
                                                                 oGlobals.Config.Load();
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                oGlobals.MacroList.Load();
+                                                                ((Macros)oGlobals.MacroList).Load();
                                                                 EchoText("Substitutes Loaded" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Clear();
                                                                 oGlobals.SubstituteList.Load(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
@@ -1594,14 +1594,14 @@ namespace GenieClient.Genie
                                                         case "load":
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
-                                                                oGlobals.MacroList.Load();
+                                                                ((Macros)oGlobals.MacroList).Load();
                                                                 break;
                                                             }
 
                                                         case "save":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                oGlobals.MacroList.Save();
+                                                                ((Macros)oGlobals.MacroList).Save();
                                                                 break;
                                                             }
 
@@ -1627,7 +1627,7 @@ namespace GenieClient.Genie
                                                 }
                                             }
                                             // Add
-                                            else if (oGlobals.MacroList.Add(oArgs[1].ToString(), oArgs[2].ToString()) == false)
+                                            else if (((Macros)oGlobals.MacroList).Add(oArgs[1].ToString(), oArgs[2].ToString()) == false)
                                             {
                                                 EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                             }
@@ -1639,7 +1639,7 @@ namespace GenieClient.Genie
                                         {
                                             if (oArgs.Count > 1)
                                             {
-                                                if (oGlobals.MacroList.Remove(oArgs[1].ToString()) == -1)
+                                                if (((Macros)oGlobals.MacroList).Remove(oArgs[1].ToString()) == -1)
                                                 {
                                                     EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                                 }

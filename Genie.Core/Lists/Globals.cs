@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
+
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -50,7 +50,7 @@ namespace GenieClient.Genie
     public Events Events = new Events();
         public CommandQueue CommandQueue = new CommandQueue();
         public Aliases AliasList = new Aliases();
-        public Macros MacroList = new Macros();
+        public Collections.SortedList MacroList;
         public Names NameList = new Names();
         public Classes ClassList = new Classes();
         public Triggers TriggerList = new Triggers();
@@ -82,13 +82,13 @@ namespace GenieClient.Genie
             {
                 if (_Log != null)
                 {
-                    GenieError.EventGenieError -= HandleGenieException;
+                    CoreError.EventCoreError -= HandleGenieException;
                 }
 
                 _Log = value;
                 if (_Log != null)
                 {
-                    GenieError.EventGenieError += HandleGenieException;
+                    CoreError.EventCoreError += HandleGenieException;
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace GenieClient.Genie
         private void HandleGenieException(string section, string message, string description = null) // Pass it up
         {
             Config.bAutoLog = false;
-            GenieError.Error(section, message, description);
+            CoreError.ErrorHandler?.Invoke(section, message, description);
         }
 
         public void Config_ConfigChanged(Config.ConfigFieldUpdated oField)
@@ -879,8 +879,8 @@ namespace GenieClient.Genie
                 Add("poisoned", "0", VariableType.Reserved);
                 Add("diseased", "0", VariableType.Reserved);
                 Add("connected", "0", VariableType.Reserved);
-                Add("client", My.MyProject.Application.Info.ProductName.ToString(), VariableType.Reserved);
-                Add("version", My.MyProject.Application.Info.Version.ToString(), VariableType.Reserved);
+                Add("client", LocalDirectory.ApplicationName, VariableType.Reserved);
+                Add("version", LocalDirectory.ApplicationVersion, VariableType.Reserved);
                 Add("time", "@time@", VariableType.Reserved);
                 Add("time24", "@time24@", VariableType.Reserved);
                 Add("militarytime", "@militarytime@", VariableType.Reserved);

@@ -15,6 +15,7 @@ namespace GenieClient
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             LocalDirectory.ApplicationName = Application.ProductName;
+            LocalDirectory.ApplicationVersion = Application.ProductVersion;
             CoreError.ErrorHandler = GenieError.Error;
 
             var host = Host.CreateDefaultBuilder()

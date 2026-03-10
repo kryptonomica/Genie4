@@ -1,9 +1,8 @@
 using System;
-using System.Drawing;
 
 namespace GenieClient.Genie
 {
-    public class ColorCode
+    internal class ColorCode
     {
         // === Primary methods (GenieColor-based) ===
 
@@ -123,15 +122,5 @@ namespace GenieClient.Genie
         {
             return GenieColor.TryFromName(sText, out _);
         }
-
-        // === Backward-compat Color overloads (WinForms UI layer) ===
-
-        public static string ColorToString(Color oColor) => ColorToString(oColor.ToGenieColor());
-        public static string ColorToString(Color oFgColor, Color oBgColor) => ColorToString(oFgColor.ToGenieColor(), oBgColor.ToGenieColor());
-        public static int ColorToColorref(Color clr) => ColorToColorref(clr.ToGenieColor());
-        public static string ColorToHex(Color oColor) => ColorToHex(oColor.ToGenieColor());
-        public static Color ColorToLighter(Color oColor) => ColorToLighter(oColor.ToGenieColor()).ToDrawingColor();
-        public static Color ColorToDarker(Color oColor) => ColorToDarker(oColor.ToGenieColor()).ToDrawingColor();
-        public static Color ColorToGrayscale(Color oColor) => ColorToGrayscale(oColor.ToGenieColor()).ToDrawingColor();
     }
 }

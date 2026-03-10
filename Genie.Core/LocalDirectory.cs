@@ -8,6 +8,7 @@ namespace GenieClient
         public static string Path = AppDomain.CurrentDomain.BaseDirectory;
         public static bool IsLocal = true;
         public static string ApplicationName { get; set; } = "Genie";
+        public static string ApplicationVersion { get; set; } = "1.0.0.0";
 
         public static void CheckUserDirectory()
         {

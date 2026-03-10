@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+
 using System.IO;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
@@ -64,7 +64,7 @@ namespace GenieClient.Genie
         public bool AutoUpdate { get; set; } = false;
         public bool AutoUpdateLamp { get; set; } = true;
 
-        public string sConnectString = "FE:GENIE /VERSION:" + My.MyProject.Application.Info.Version.ToString() + " /P:WIN_XP /XML";
+        public string sConnectString = "FE:GENIE /VERSION:" + LocalDirectory.ApplicationVersion + " /P:WIN_XP /XML";
         public int[] iPickerColors = new int[17];
         public string RubyPath { get; set; } = @"C:\ruby4lich5\bin\ruby.exe";
         public string CmdPath { get; set; } = @"C:\Windows\System32\cmd.exe";
@@ -379,8 +379,8 @@ namespace GenieClient.Genie
             }
         }
 
-        public Font m_oMonoFont = new Font("Courier New", 9, FontStyle.Regular);
-        public Font m_oInputFont = new Font("Courier New", 9, FontStyle.Regular);
+        public GenieFont m_oMonoFont = new GenieFont("Courier New", 9, GenieFontStyle.Regular);
+        public GenieFont m_oInputFont = new GenieFont("Courier New", 9, GenieFontStyle.Regular);
 
         public event ConfigChangedEventHandler ConfigChanged;
 
@@ -406,7 +406,7 @@ namespace GenieClient.Genie
             UpdateMapperScripts
         }
 
-        public Font MonoFont
+        public GenieFont MonoFont
         {
             get
             {
@@ -420,7 +420,7 @@ namespace GenieClient.Genie
             }
         }
 
-        public Font InputFont
+        public GenieFont InputFont
         {
             get
             {
