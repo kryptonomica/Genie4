@@ -7,4 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Interfaces">
+      <HintPath>..\Libs\Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>..\Libs\Jint.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

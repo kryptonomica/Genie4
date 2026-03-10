@@ -14,6 +14,7 @@ namespace GenieClient.Genie
 {
     public class Connection
     {
+        public static Action OnExitRequested { get; set; }
 
         public event EventConnectedEventHandler EventConnected;
 
@@ -434,7 +435,7 @@ namespace GenieClient.Genie
                 PrintText(Utility.GetTimeStamp() + " Connection closed.");
                 if (ExitOnDisconnect)
                 {
-                    System.Windows.Forms.Application.Exit();
+                    OnExitRequested?.Invoke();
                 }
                 else
                 {

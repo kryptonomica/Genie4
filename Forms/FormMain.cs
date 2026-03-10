@@ -3999,7 +3999,7 @@ namespace GenieClient
             oTargetWindow.RichTextBoxOutput.InsertLink(sText, sLink);
         }
 
-        private void ClassCommand_EchoColorText(string sText, Color oColor, Color oBgColor, string sWindow)
+        private void ClassCommand_EchoColorText(string sText, GenieColor oColor, GenieColor oBgColor, string sWindow)
         {
             try
             {
@@ -4029,12 +4029,12 @@ namespace GenieClient
 
                 if (!Information.IsNothing(oFormSkin))
                 {
-                    AddText(sText, oColor, oBgColor, oFormSkin, true, bMono);
+                    AddText(sText, oColor.ToDrawingColor(), oBgColor.ToDrawingColor(), oFormSkin, true, bMono);
                 }
                 else if (sWindow.Length == 0)
                 {
                     string argsTargetWindow = "";
-                    AddText(sText, oColor, oBgColor, Genie.Game.WindowTarget.Main, argsTargetWindow, true, bMono);
+                    AddText(sText, oColor.ToDrawingColor(), oBgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main, argsTargetWindow, true, bMono);
                 }
             }
             /* TODO ERROR: Skipped IfDirectiveTrivia */
@@ -5240,11 +5240,11 @@ namespace GenieClient
             }
         }
 
-        private void Simutronics_EventPrintText(string sText, Color oColor, Color oBgColor, Genie.Game.WindowTarget oTargetWindow, string sTargetWindow, bool bMono, bool bPrompt, bool bInput)
+        private void Simutronics_EventPrintText(string sText, GenieColor oColor, GenieColor oBgColor, Genie.Game.WindowTarget oTargetWindow, string sTargetWindow, bool bMono, bool bPrompt, bool bInput)
         {
             try
             {
-                AddText(sText, oColor, oBgColor, oTargetWindow, sTargetWindow, false, bMono, bPrompt, bInput); // False = Cache this
+                AddText(sText, oColor.ToDrawingColor(), oBgColor.ToDrawingColor(), oTargetWindow, sTargetWindow, false, bMono, bPrompt, bInput); // False = Cache this
             }
             /* TODO ERROR: Skipped IfDirectiveTrivia */
             catch (Exception ex)
@@ -5255,11 +5255,11 @@ namespace GenieClient
         }
 
         // Script Print
-        private void Script_EventPrintText(string sText, Color oColor, Color oBgColor)
+        private void Script_EventPrintText(string sText, GenieColor oColor, GenieColor oBgColor)
         {
             Genie.Game.WindowTarget argoTargetWindow = Genie.Game.WindowTarget.Main;
             string argsTargetWindow = "";
-            AddText(sText, oColor, oBgColor, oTargetWindow: argoTargetWindow, sTargetWindow: argsTargetWindow);
+            AddText(sText, oColor.ToDrawingColor(), oBgColor.ToDrawingColor(), oTargetWindow: argoTargetWindow, sTargetWindow: argsTargetWindow);
         }
 
         private void Simutronics_EventEndUpdate()

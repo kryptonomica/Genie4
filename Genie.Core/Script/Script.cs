@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
 using Jint;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
@@ -627,7 +625,7 @@ namespace GenieClient
 
         public event EventPrintTextEventHandler EventPrintText;
 
-        public delegate void EventPrintTextEventHandler(string sText, Color oColor, Color oBgColor);
+        public delegate void EventPrintTextEventHandler(string sText, GenieColor oColor, GenieColor oBgColor);
 
         public event EventSendTextEventHandler EventSendText;
 
@@ -1252,7 +1250,7 @@ namespace GenieClient
                     }
                     catch (Exception ex)
                     {
-                        GenieError.Error("Script WaitFor", ex.Message, ex.ToString());
+                        CoreError.Error("Script WaitFor", ex.Message, ex.ToString());
                     }
 
                     try
@@ -1303,7 +1301,7 @@ namespace GenieClient
                     }
                     catch (Exception ex)
                     {
-                        GenieError.Error("Script MatchWait", ex.Message, ex.ToString());
+                        CoreError.Error("Script MatchWait", ex.Message, ex.ToString());
                     }
 
                     try
@@ -1337,7 +1335,7 @@ namespace GenieClient
                     }
                     catch (Exception ex)
                     {
-                        GenieError.Error("Script Action", ex.Message, ex.ToString());
+                        CoreError.Error("Script Action", ex.Message, ex.ToString());
                     }
                 }
                 finally
@@ -1694,7 +1692,7 @@ namespace GenieClient
                 /* TODO ERROR: Skipped IfDirectiveTrivia */
                 catch (Exception ex)
                 {
-                    GenieError.Error("TickScript", ex.Message, ex.ToString());
+                    CoreError.Error("TickScript", ex.Message, ex.ToString());
                 }
                 /* TODO ERROR: Skipped EndIfDirectiveTrivia */
                 finally
@@ -1914,7 +1912,7 @@ namespace GenieClient
                 /* TODO ERROR: Skipped IfDirectiveTrivia */
                 catch (Exception ex)
                 {
-                    GenieError.Error("RunScript", ex.Message, ex.ToString());
+                    CoreError.Error("RunScript", ex.Message, ex.ToString());
                 }
                 /* TODO ERROR: Skipped EndIfDirectiveTrivia */
                 finally
@@ -3547,7 +3545,7 @@ namespace GenieClient
             }
             catch (Exception ex)
             {
-                GenieError.Error("ClearScript", ex.Message, ex.ToString());
+                CoreError.Error("ClearScript", ex.Message, ex.ToString());
             }
         }
 
@@ -4357,22 +4355,22 @@ namespace GenieClient
             // Everything above 9 has to be an exact match to show
             if (DebugLevel > 9 & DebugLevel == iLevel)
             {
-                EventPrintText?.Invoke(sDebugMessage + sText + System.Environment.NewLine, Color.RoyalBlue, Color.Transparent);
+                EventPrintText?.Invoke(sDebugMessage + sText + System.Environment.NewLine, GenieColor.RoyalBlue, GenieColor.Transparent);
             }
             else if (DebugLevel <= 9 & DebugLevel >= iLevel)
             {
-                EventPrintText?.Invoke(sDebugMessage + sText + System.Environment.NewLine, Color.RoyalBlue, Color.Transparent);
+                EventPrintText?.Invoke(sDebugMessage + sText + System.Environment.NewLine, GenieColor.RoyalBlue, GenieColor.Transparent);
             }
         }
 
         private void PrintText(string sText)
         {
-            EventPrintText?.Invoke(sText + System.Environment.NewLine, Color.White, Color.Transparent);
+            EventPrintText?.Invoke(sText + System.Environment.NewLine, GenieColor.White, GenieColor.Transparent);
         }
 
         private void PrintEcho(string sText)
         {
-            EventPrintText?.Invoke(sText + System.Environment.NewLine, m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), Color.Transparent);
+            EventPrintText?.Invoke(sText + System.Environment.NewLine, m_oGlobals.PresetList["scriptecho"].FgColor, GenieColor.Transparent);
         }
 
         private void SendText(string text, bool queue = false, bool docommand = false)

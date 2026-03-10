@@ -2,11 +2,9 @@
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 // Imports Jint
@@ -15,6 +13,19 @@ namespace GenieClient.Genie
 {
     public class Command
     {
+        // Platform callbacks for Sound (P/Invoke on Windows)
+        public static Action<string> PlayWaveFile { get; set; }
+        public static Action<string> PlayWaveSystem { get; set; }
+        public static Action StopPlaying { get; set; }
+
+        // Platform callbacks for Macros (depends on System.Windows.Forms.Keys)
+        public static Action MacroSave { get; set; }
+        public static Action MacroLoad { get; set; }
+        public static Func<string, string, bool> MacroAdd { get; set; }
+        public static Func<string, int> MacroRemove { get; set; }
+        public static Func<object, string> MacroKeyToString { get; set; }
+        public static Func<object, string> MacroValueAction { get; set; }
+
         public event EventReconnectEventHandler EventReconnect;
 
         public delegate void EventReconnectEventHandler();
@@ -45,7 +56,7 @@ namespace GenieClient.Genie
 
         public event EventEchoColorTextEventHandler EventEchoColorText;
 
-        public delegate void EventEchoColorTextEventHandler(string sText, Color oColor, Color oBgColor, string sWindow);
+        public delegate void EventEchoColorTextEventHandler(string sText, GenieColor oColor, GenieColor oBgColor, string sWindow);
 
         public event EventSendTextEventHandler EventSendText;
 
@@ -269,8 +280,8 @@ namespace GenieClient.Genie
                                             // #echo <color> >window text
                                             string sOutputWindow = string.Empty;
                                             int iColorIndex = 0;
-                                            Color oColor = default;
-                                            Color oBgcolor = default;
+                                            GenieColor oColor = default;
+                                            GenieColor oBgcolor = default;
                                             if (oArgs.Count > 1 && oArgs[1].ToString().StartsWith(">"))
                                             {
                                                 sOutputWindow = oGlobals.ParseGlobalVars(oArgs[1].ToString().Substring(1));
@@ -298,22 +309,22 @@ namespace GenieClient.Genie
                                                 {
                                                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                                                     string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                                                    oColor = ColorCode.StringToColor(sColor).ToDrawingColor();
-                                                    oBgcolor = ColorCode.StringToColor(sBgColor).ToDrawingColor();
+                                                    oColor = ColorCode.StringToColor(sColor);
+                                                    oBgcolor = ColorCode.StringToColor(sBgColor);
                                                 }
                                                 else
                                                 {
-                                                    oColor = ColorCode.StringToColor(sColorName).ToDrawingColor();
-                                                    oBgcolor = Color.Transparent;
+                                                    oColor = ColorCode.StringToColor(sColorName);
+                                                    oBgcolor = GenieColor.Transparent;
                                                 }
 
-                                                if (!Information.IsNothing(oColor) && oColor != Color.Empty)
+                                                if (!Information.IsNothing(oColor) && oColor != default(GenieColor))
                                                 {
                                                     oArgs[iColorIndex] = null;
                                                 }
                                             }
 
-                                            if (!Information.IsNothing(oColor) && oColor != Color.Empty)
+                                            if (!Information.IsNothing(oColor) && oColor != default(GenieColor))
                                             {
                                                 string argsText1 = oGlobals.ParseGlobalVars(ParseAllArgs(oArgs, 1, false) + System.Environment.NewLine);
                                                 EchoColorText(argsText1, oColor, oBgcolor, sOutputWindow);
@@ -438,7 +449,7 @@ namespace GenieClient.Genie
                                             else
                                             {
                                                 failure = "Fix the following file paths in your #Config" + System.Environment.NewLine + failure;
-                                                EchoColorText(failure, Color.OrangeRed, Color.Transparent);
+                                                EchoColorText(failure, GenieColor.OrangeRed, GenieColor.Transparent);
                                             }
                                             break;
                                         }
@@ -541,7 +552,7 @@ namespace GenieClient.Genie
                                                         case "macros":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                ((Macros)oGlobals.MacroList).Save();
+                                                                MacroSave?.Invoke();
                                                                 break;
                                                             }
 
@@ -617,7 +628,7 @@ namespace GenieClient.Genie
                                                                 EchoText("Settings Saved" + System.Environment.NewLine);
                                                                 oGlobals.Config.Save(oGlobals.Config.ConfigDir + @"\settings.cfg");
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                ((Macros)oGlobals.MacroList).Save();
+                                                                MacroSave?.Invoke();
                                                                 EchoText("Substitutes Saved" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Save(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
                                                                 EchoText("Gags Saved" + System.Environment.NewLine);
@@ -703,7 +714,7 @@ namespace GenieClient.Genie
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                ((Macros)oGlobals.MacroList).Load();
+                                                                MacroLoad?.Invoke();
                                                                 break;
                                                             }
 
@@ -791,7 +802,7 @@ namespace GenieClient.Genie
                                                                 oGlobals.Config.Load();
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                ((Macros)oGlobals.MacroList).Load();
+                                                                MacroLoad?.Invoke();
                                                                 EchoText("Substitutes Loaded" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Clear();
                                                                 oGlobals.SubstituteList.Load(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
@@ -1552,11 +1563,11 @@ namespace GenieClient.Genie
                                                 string sSound = GetArgumentString(sRow);
                                                 if ((sSound.ToLower() ?? "") == "stop")
                                                 {
-                                                    Sound.StopPlaying();
+                                                    StopPlaying?.Invoke();
                                                 }
                                                 else if (sSound.Length > 0)
                                                 {
-                                                    Sound.PlayWaveFile(sSound);
+                                                    PlayWaveFile?.Invoke(sSound);
                                                 }
                                             }
 
@@ -1570,7 +1581,7 @@ namespace GenieClient.Genie
                                                 string sSound = GetArgumentString(sRow);
                                                 if (sSound.Length > 0)
                                                 {
-                                                    Sound.PlayWaveSystem(sSound);
+                                                    PlayWaveSystem?.Invoke(sSound);
                                                 }
                                             }
 
@@ -1594,14 +1605,14 @@ namespace GenieClient.Genie
                                                         case "load":
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
-                                                                ((Macros)oGlobals.MacroList).Load();
+                                                                MacroLoad?.Invoke();
                                                                 break;
                                                             }
 
                                                         case "save":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                ((Macros)oGlobals.MacroList).Save();
+                                                                MacroSave?.Invoke();
                                                                 break;
                                                             }
 
@@ -1627,7 +1638,7 @@ namespace GenieClient.Genie
                                                 }
                                             }
                                             // Add
-                                            else if (((Macros)oGlobals.MacroList).Add(oArgs[1].ToString(), oArgs[2].ToString()) == false)
+                                            else if (MacroAdd != null && MacroAdd(oArgs[1].ToString(), oArgs[2].ToString()) == false)
                                             {
                                                 EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                             }
@@ -1639,7 +1650,7 @@ namespace GenieClient.Genie
                                         {
                                             if (oArgs.Count > 1)
                                             {
-                                                if (((Macros)oGlobals.MacroList).Remove(oArgs[1].ToString()) == -1)
+                                                if (MacroRemove != null && MacroRemove(oArgs[1].ToString()) == -1)
                                                 {
                                                     EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                                 }
@@ -2365,7 +2376,7 @@ namespace GenieClient.Genie
                                                             }
                                                             catch(Exception ex)
                                                             {
-                                                                EchoColorText(ex.Message + System.Environment.NewLine, oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), "");
+                                                                EchoColorText(ex.Message + System.Environment.NewLine, oGlobals.PresetList["scriptecho"].FgColor, oGlobals.PresetList["scriptecho"].BgColor, "");
                                                             }
                                                             break;
                                                         }
@@ -2679,7 +2690,7 @@ namespace GenieClient.Genie
             EventEchoText?.Invoke(sText, sWindow);
         }
 
-        private void EchoColorText(string sText, Color oColor, Color oBgColor, string sWindow = "")
+        private void EchoColorText(string sText, GenieColor oColor, GenieColor oBgColor, string sWindow = "")
         {
             EventEchoColorText?.Invoke(sText, oColor, oBgColor, sWindow);
         }
@@ -2955,17 +2966,9 @@ namespace GenieClient.Genie
         private void ListColors()
         {
             EchoText("Available colors: " + System.Environment.NewLine);
-            KnownColor c;
-            foreach (string s in Enum.GetNames(typeof(KnownColor)))
+            foreach (var kvp in GenieColor.NamedColors)
             {
-                c = (KnownColor)Enum.Parse(typeof(KnownColor), s);
-                if (c > KnownColor.Transparent & c < KnownColor.ButtonFace)
-                {
-                    string argsText = s + System.Environment.NewLine;
-                    var argoColor = Color.FromKnownColor(c);
-                    var argoBgColor = Color.Transparent;
-                    EchoColorText(argsText, argoColor, argoBgColor);
-                }
+                EchoColorText(kvp.Key + System.Environment.NewLine, kvp.Value, GenieColor.Transparent);
             }
         }
 
@@ -3051,7 +3054,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListVariables", "Unable to aquire reader lock.");
+                CoreError.Error("ListVariables", "Unable to aquire reader lock.");
             }
         }
 
@@ -3090,7 +3093,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListSubstitutes", "Unable to aquire reader lock.");
+                CoreError.Error("ListSubstitutes", "Unable to aquire reader lock.");
             }
         }
 
@@ -3129,7 +3132,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListGags", "Unable to aquire reader lock.");
+                CoreError.Error("ListGags", "Unable to aquire reader lock.");
             }
         }
 
@@ -3153,7 +3156,7 @@ namespace GenieClient.Genie
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
                             string argsText = Conversions.ToString(de.Key) + System.Environment.NewLine;
-                            EchoColorText(argsText, ((Names.Name)de.Value).FgColor.ToDrawingColor(), ((Names.Name)de.Value).BgColor.ToDrawingColor());
+                            EchoColorText(argsText, ((Names.Name)de.Value).FgColor, ((Names.Name)de.Value).BgColor);
                             I += 1;
                         }
                     }
@@ -3170,7 +3173,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListNames", "Unable to aquire reader lock.");
+                CoreError.Error("ListNames", "Unable to aquire reader lock.");
             }
         }
 
@@ -3194,7 +3197,7 @@ namespace GenieClient.Genie
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
                             string argsText = Conversions.ToString(de.Key) + System.Environment.NewLine;
-                            EchoColorText(argsText, ((Globals.Presets.Preset)de.Value).FgColor.ToDrawingColor(), ((Globals.Presets.Preset)de.Value).BgColor.ToDrawingColor());
+                            EchoColorText(argsText, ((Globals.Presets.Preset)de.Value).FgColor, ((Globals.Presets.Preset)de.Value).BgColor);
                             I += 1;
                         }
                     }
@@ -3211,7 +3214,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListPresets", "Unable to aquire reader lock.");
+                CoreError.Error("ListPresets", "Unable to aquire reader lock.");
             }
         }
 
@@ -3239,7 +3242,7 @@ namespace GenieClient.Genie
                             if (((Highlights.Highlight)de.Value).HighlightWholeRow == false)
                             {
                                 string argsText = Conversions.ToString("[" + ((Highlights.Highlight)de.Value).ClassName + ":" + Interaction.IIf(((Highlights.Highlight)de.Value).IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                                EchoColorText(argsText, ((Highlights.Highlight)de.Value).FgColor.ToDrawingColor(), ((Highlights.Highlight)de.Value).BgColor.ToDrawingColor());
+                                EchoColorText(argsText, ((Highlights.Highlight)de.Value).FgColor, ((Highlights.Highlight)de.Value).BgColor);
                             }
 
                             I += 1;
@@ -3258,7 +3261,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListHighlights", "Unable to aquire reader lock.");
+                CoreError.Error("ListHighlights", "Unable to aquire reader lock.");
             }
 
             if (oGlobals.HighlightList.AcquireReaderLock())
@@ -3275,7 +3278,7 @@ namespace GenieClient.Genie
                             if (((Highlights.Highlight)de.Value).HighlightWholeRow == true)
                             {
                                 string argsText1 = Conversions.ToString("[" + ((Highlights.Highlight)de.Value).ClassName + ":" + Interaction.IIf(((Highlights.Highlight)de.Value).IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                                EchoColorText(argsText1, ((Highlights.Highlight)de.Value).FgColor.ToDrawingColor(), ((Highlights.Highlight)de.Value).BgColor.ToDrawingColor());
+                                EchoColorText(argsText1, ((Highlights.Highlight)de.Value).FgColor, ((Highlights.Highlight)de.Value).BgColor);
                             }
 
                             I += 1;
@@ -3294,7 +3297,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListHighlights", "Unable to aquire reader lock.");
+                CoreError.Error("ListHighlights", "Unable to aquire reader lock.");
             }
 
             if (oGlobals.HighlightBeginsWithList.AcquireReaderLock())
@@ -3309,7 +3312,7 @@ namespace GenieClient.Genie
                         {
                             Globals.HighlightLineBeginsWith.Highlight oHighlight = (Globals.HighlightLineBeginsWith.Highlight)de.Value;
                             string argsText2 = Conversions.ToString("[" + oHighlight.ClassName + ":" + Interaction.IIf(oHighlight.IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                            EchoColorText(argsText2, oHighlight.FgColor.ToDrawingColor(), oHighlight.BgColor.ToDrawingColor());
+                            EchoColorText(argsText2, oHighlight.FgColor, oHighlight.BgColor);
                             I += 1;
                         }
                     }
@@ -3326,7 +3329,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListHighlights", "Unable to aquire reader lock.");
+                CoreError.Error("ListHighlights", "Unable to aquire reader lock.");
             }
 
             if (oGlobals.HighlightRegExpList.AcquireReaderLock())
@@ -3341,7 +3344,7 @@ namespace GenieClient.Genie
                         {
                             Globals.HighlightRegExp.Highlight oHighlight = (Globals.HighlightRegExp.Highlight)de.Value;
                             string argsText3 = Conversions.ToString("[" + oHighlight.ClassName + ":" + Interaction.IIf(oHighlight.IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                            EchoColorText(argsText3, oHighlight.FgColor.ToDrawingColor(), oHighlight.BgColor.ToDrawingColor());
+                            EchoColorText(argsText3, oHighlight.FgColor, oHighlight.BgColor);
                             I += 1;
                         }
                     }
@@ -3358,7 +3361,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListHighlights", "Unable to aquire reader lock.");
+                CoreError.Error("ListHighlights", "Unable to aquire reader lock.");
             }
         }
 
@@ -3381,7 +3384,9 @@ namespace GenieClient.Genie
                     {
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
-                            EchoText(((Keys)Conversions.ToInteger(de.Key)).ToString() + "=" + ((Macros.Macro)de.Value).sAction + System.Environment.NewLine);
+                            string keyName = MacroKeyToString != null ? MacroKeyToString(de.Key) : de.Key.ToString();
+                            string action = MacroValueAction != null ? MacroValueAction(de.Value) : de.Value.ToString();
+                            EchoText(keyName + "=" + action + System.Environment.NewLine);
                             I += 1;
                         }
                     }
@@ -3398,7 +3403,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListMacros", "Unable to aquire reader lock.");
+                CoreError.Error("ListMacros", "Unable to aquire reader lock.");
             }
         }
 
@@ -3438,7 +3443,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListTriggers", "Unable to aquire reader lock.");
+                CoreError.Error("ListTriggers", "Unable to aquire reader lock.");
             }
         }
 
@@ -3478,7 +3483,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListAliases", "Unable to aquire reader lock.");
+                CoreError.Error("ListAliases", "Unable to aquire reader lock.");
             }
         }
 
@@ -3518,7 +3523,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListClasses", "Unable to aquire reader lock.");
+                CoreError.Error("ListClasses", "Unable to aquire reader lock.");
             }
         }
 
@@ -3558,7 +3563,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListEvents", "Unable to aquire reader lock.");
+                CoreError.Error("ListEvents", "Unable to aquire reader lock.");
             }
         }
 
@@ -3598,7 +3603,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("ListCommandQueue", "Unable to aquire reader lock.");
+                CoreError.Error("ListCommandQueue", "Unable to aquire reader lock.");
             }
         }
     }

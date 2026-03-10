@@ -3,7 +3,6 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,6 +17,10 @@ namespace GenieClient.Genie
 {
     public class Game
     {
+        public static Action<string> PlaySound { get; set; }
+        public static Func<string, string, string, Task<bool>> FetchImageHandler { get; set; }
+        public static Func<string, string, ArrayList, bool, string> ParsePluginTextHandler { get; set; }
+
         public Game()
         {
             m_oSocket = new Connection();
@@ -33,7 +36,7 @@ namespace GenieClient.Genie
         public delegate void EventAddImageEventHandler(string filename, string window, int width, int height);
         public event EventPrintTextEventHandler EventPrintText;
 
-        public delegate void EventPrintTextEventHandler(string text, Color color, Color bgcolor, WindowTarget targetwindow, string targetwindowstring, bool mono, bool isprompt, bool isinput);
+        public delegate void EventPrintTextEventHandler(string text, GenieColor color, GenieColor bgcolor, WindowTarget targetwindow, string targetwindowstring, bool mono, bool isprompt, bool isinput);
 
         public event EventPrintErrorEventHandler EventPrintError;
 
@@ -146,16 +149,7 @@ namespace GenieClient.Genie
             [MethodImpl(MethodImplOptions.Synchronized)]
             set
             {
-                if (_m_oGlobals != null)
-                {
-                    GenieError.EventGenieError -= HandleGenieException;
-                }
-
                 _m_oGlobals = value;
-                if (_m_oGlobals != null)
-                {
-                    GenieError.EventGenieError += HandleGenieException;
-                }
             }
         }
 
@@ -475,7 +469,7 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    GenieError.Error("SendText", "Unable to aquire reader lock.");
+                    CoreError.Error("SendText", "Unable to aquire reader lock.");
                 }
 
                 sShowText = "[" + sOrigin + "]: " + sShowText;
@@ -487,12 +481,12 @@ namespace GenieClient.Genie
 
             if (bHideOutput == false)
             {
-                Color color;
-                Color bgcolor;
+                GenieColor color;
+                GenieColor bgcolor;
                 if (bUserInput == true)
                 {
-                    color = m_oGlobals.PresetList["inputuser"].FgColor.ToDrawingColor();
-                    bgcolor = m_oGlobals.PresetList["inputuser"].BgColor.ToDrawingColor();
+                    color = m_oGlobals.PresetList["inputuser"].FgColor;
+                    bgcolor = m_oGlobals.PresetList["inputuser"].BgColor;
                     if (!sText.StartsWith(Conversions.ToString(m_oGlobals.Config.cMyCommandChar))) // Skip user commands
                     {
                         m_oGlobals.VariableList["lastinput"] = sText;
@@ -503,8 +497,8 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    color = m_oGlobals.PresetList["inputother"].FgColor.ToDrawingColor();
-                    bgcolor = m_oGlobals.PresetList["inputother"].BgColor.ToDrawingColor();
+                    color = m_oGlobals.PresetList["inputother"].FgColor;
+                    bgcolor = m_oGlobals.PresetList["inputother"].BgColor;
                 }
 
                 string argsText = sShowText + System.Environment.NewLine;
@@ -561,7 +555,7 @@ namespace GenieClient.Genie
 
             if (m_bShowRawOutput == true)
             {
-                PrintTextToWindow(sText, Color.LightGray, Color.Black, WindowTarget.Raw);
+                PrintTextToWindow(sText, GenieColor.LightGray, GenieColor.Black, WindowTarget.Raw);
             }
 
             foreach (char c in sText)
@@ -915,7 +909,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("SetBufferEnd", "Unable to aquire game thread lock.");
+                CoreError.Error("SetBufferEnd", "Unable to aquire game thread lock.");
             }
         }
 
@@ -929,25 +923,25 @@ namespace GenieClient.Genie
                     {
                         // ClearWindow(WindowTarget.Room)
                         WindowTarget targetRoom = WindowTarget.Room;
-                        PrintTextToWindow("@suspend@", Color.Transparent, Color.Transparent, targetRoom, false, true);
+                        PrintTextToWindow("@suspend@", GenieColor.Transparent, GenieColor.Transparent, targetRoom, false, true);
                         if (Strings.Len(m_sRoomTitle) > 0)
                         {
                             string argsText = "[" + m_sRoomTitle + "]" + Constants.vbCrLf;
                             bool argbIsRoomOutput = true;
-                            PrintTextWithParse(argsText, m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor(), false, targetRoom, argbIsRoomOutput);
+                            PrintTextWithParse(argsText, m_oGlobals.PresetList["roomname"].FgColor, m_oGlobals.PresetList["roomname"].BgColor, false, targetRoom, argbIsRoomOutput);
                         }
                         else
                         {
                             string argsText1 = "[Unknown Room]" + Constants.vbCrLf;
                             bool argbIsRoomOutput1 = true;
-                            PrintTextWithParse(argsText1, m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor(), false, targetRoom, argbIsRoomOutput1);
+                            PrintTextWithParse(argsText1, m_oGlobals.PresetList["roomname"].FgColor, m_oGlobals.PresetList["roomname"].BgColor, false, targetRoom, argbIsRoomOutput1);
                         }
 
                         if (Strings.Len(m_sRoomDesc) > 0)
                         {
                             string argsText2 = m_sRoomDesc + System.Environment.NewLine;
                             bool argbIsRoomOutput2 = true;
-                            PrintTextWithParse(argsText2, m_oGlobals.PresetList["roomdesc"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomdesc"].BgColor.ToDrawingColor(), false, WindowTarget.Room, argbIsRoomOutput2);
+                            PrintTextWithParse(argsText2, m_oGlobals.PresetList["roomdesc"].FgColor, m_oGlobals.PresetList["roomdesc"].BgColor, false, WindowTarget.Room, argbIsRoomOutput2);
                         }
 
                         if (Strings.Len(m_sRoomObjs) > 0)
@@ -978,10 +972,10 @@ namespace GenieClient.Genie
 
                             string argsText5 = m_sRoomExits + System.Environment.NewLine;
                             bool argbIsRoomOutput5 = true;
-                            PrintTextWithParse(argsText5, Color.Transparent, Color.Transparent, false, targetRoom, argbIsRoomOutput5);
+                            PrintTextWithParse(argsText5, GenieColor.Transparent, GenieColor.Transparent, false, targetRoom, argbIsRoomOutput5);
                         }
 
-                        PrintTextToWindow("@resume@", Color.Transparent, Color.Transparent, WindowTarget.Room, false, true);
+                        PrintTextToWindow("@resume@", GenieColor.Transparent, GenieColor.Transparent, WindowTarget.Room, false, true);
                     }
                     else
                     {
@@ -995,7 +989,7 @@ namespace GenieClient.Genie
             }
             else
             {
-                GenieError.Error("UpdateRoom", "Unable to aquire game thread lock.");
+                CoreError.Error("UpdateRoom", "Unable to aquire game thread lock.");
             }
         }
 
@@ -1346,7 +1340,7 @@ namespace GenieClient.Genie
                                 attribute += ".jpg";
                                 string gamecode = "DR"; //default DR
                                 if (AccountGame.StartsWith("GS")) gamecode = "GS";
-                                if (FileHandler.FetchImage(attribute, m_oGlobals.Config.ArtDir, gamecode).Result) AddImage(Path.Combine(gamecode, attribute), "portrait");
+                                if (FetchImageHandler != null && FetchImageHandler(attribute, m_oGlobals.Config.ArtDir, gamecode).Result) AddImage(Path.Combine(gamecode, attribute), "portrait");
                             }
                             break;
                         }
@@ -1576,7 +1570,7 @@ namespace GenieClient.Genie
                                         string argsText = GetTextFromXML(oXmlNode) + System.Environment.NewLine;
                                         bool argbIsRoomOutput = false;
                                         WindowTarget windowTarget = WindowTarget.Thoughts;
-                                        PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["thoughts"].BgColor.ToDrawingColor(), false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
+                                        PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].FgColor, m_oGlobals.PresetList["thoughts"].BgColor, false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
                                         break;
                                     }
 
@@ -2683,7 +2677,7 @@ namespace GenieClient.Genie
             PrintTextWithParse(sText, default, default, bIsPrompt, oWindowTarget, bIsRoomOutput: argbIsRoomOutput);
         }
 
-        public void PrintTextWithParse(string sText, Color color, Color bgcolor, bool bIsPrompt = false, WindowTarget oWindowTarget = WindowTarget.Unknown, bool bIsRoomOutput = false)
+        public void PrintTextWithParse(string sText, GenieColor color, GenieColor bgcolor, bool bIsPrompt = false, WindowTarget oWindowTarget = WindowTarget.Unknown, bool bIsRoomOutput = false)
         {
             
             if (sText.Trim().Length > 0)
@@ -2701,16 +2695,16 @@ namespace GenieClient.Genie
                     {
                         case "roomName":
                             {
-                                color = m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor();
-                                bgcolor = m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor();
+                                color = m_oGlobals.PresetList["roomname"].FgColor;
+                                bgcolor = m_oGlobals.PresetList["roomname"].BgColor;
                                 m_oLastFgColor = color;
                                 break;
                             }
 
                         case "roomDesc":
                             {
-                                color = m_oGlobals.PresetList["roomdesc"].FgColor.ToDrawingColor();
-                                bgcolor = m_oGlobals.PresetList["roomdesc"].BgColor.ToDrawingColor();
+                                color = m_oGlobals.PresetList["roomdesc"].FgColor;
+                                bgcolor = m_oGlobals.PresetList["roomdesc"].BgColor;
                                 m_oLastFgColor = color;
                                 break;
                             }
@@ -2745,11 +2739,11 @@ namespace GenieClient.Genie
                             {
                                 if (sText.StartsWith(o.Text, !o.CaseSensitive, null) == true)
                                 {
-                                    color = o.FgColor.ToDrawingColor();
-                                    bgcolor = o.BgColor.ToDrawingColor();
+                                    color = o.FgColor;
+                                    bgcolor = o.BgColor;
                                     m_oLastFgColor = color;
                                     if (o.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
-                                        Sound.PlayWaveFile(o.SoundFile);
+                                        PlaySound?.Invoke(o.SoundFile);
                                 }
                             }
                         }
@@ -2761,7 +2755,7 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    GenieError.Error("PrintTextWithParse", "Unable to aquire reader lock.");
+                    CoreError.Error("PrintTextWithParse", "Unable to aquire reader lock.");
                 }
 
                 // Line contains
@@ -2774,11 +2768,11 @@ namespace GenieClient.Genie
                         if (m_oGlobals.HighlightList.Contains(oMatch.Value))
                         {
                             oHighlightString = (Highlights.Highlight)m_oGlobals.HighlightList[oMatch.Value];
-                            color = oHighlightString.FgColor.ToDrawingColor();
-                            bgcolor = oHighlightString.BgColor.ToDrawingColor();
+                            color = oHighlightString.FgColor;
+                            bgcolor = oHighlightString.BgColor;
                             m_oLastFgColor = color;
                             if (oHighlightString.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
-                                Sound.PlayWaveFile(oHighlightString.SoundFile);
+                                PlaySound?.Invoke(oHighlightString.SoundFile);
                         }
                     }
                 }
@@ -2792,10 +2786,10 @@ namespace GenieClient.Genie
             
         }
 
-        private Color m_oLastFgColor = default;
-        private Color m_oEmptyColor = default;
+        private GenieColor m_oLastFgColor = default;
+        private GenieColor m_oEmptyColor = default;
 
-        private void PrintTextToWindow(string text, Color color, Color bgcolor, WindowTarget targetwindow = WindowTarget.Main, bool isprompt = false, bool isroomoutput = false)
+        private void PrintTextToWindow(string text, GenieColor color, GenieColor bgcolor, WindowTarget targetwindow = WindowTarget.Main, bool isprompt = false, bool isroomoutput = false)
         {
             if (text.Length == 0 || (!isroomoutput && m_oGlobals.Config.Condensed && text.Trim().Length == 0))
             {
@@ -2936,7 +2930,7 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    GenieError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
+                    CoreError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
                 }
             }
 
@@ -2977,7 +2971,7 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    GenieError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
+                    CoreError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
                 }
             }
 
@@ -3018,7 +3012,7 @@ namespace GenieClient.Genie
                 m_bManualDisconnect = true;
             }
 
-            if (color == m_oEmptyColor | color == Color.Transparent)
+            if (color == m_oEmptyColor | color == GenieColor.Transparent)
             {
                 if (m_oLastFgColor != m_oEmptyColor)
                 {
@@ -3039,8 +3033,8 @@ namespace GenieClient.Genie
 
             if (targetwindow == WindowTarget.Familiar)
             {
-                color = m_oGlobals.PresetList["familiar"].FgColor.ToDrawingColor();
-                bgcolor = m_oGlobals.PresetList["familiar"].BgColor.ToDrawingColor();
+                color = m_oGlobals.PresetList["familiar"].FgColor;
+                bgcolor = m_oGlobals.PresetList["familiar"].BgColor;
             }
 
             var tempVar = false;
@@ -3084,7 +3078,7 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    GenieError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
+                    CoreError.Error("PrintTextToWindow", "Unable to aquire reader lock.");
                 }
             }
 
@@ -3104,7 +3098,7 @@ namespace GenieClient.Genie
         }
 
         // Skip all blank line/prompt checks and just print it
-        private void PrintInputText(string sText, Color oColor, Color oBgColor)
+        private void PrintInputText(string sText, GenieColor oColor, GenieColor oBgColor)
         {
             if (sText.Length == 0)
             {
@@ -3167,11 +3161,6 @@ namespace GenieClient.Genie
             }
         }
 
-        private void HandleGenieException(string section, string message, string description = null)
-        {
-            GenieError.Error(section, message, description);
-        }
-
         private void GameSocket_EventConnected()
         {
             var switchExpr = m_oConnectState;
@@ -3230,44 +3219,8 @@ namespace GenieClient.Genie
         {
             if (m_oGlobals.PluginsEnabled == false)
                 return sText;
-            foreach (object oPlugin in m_oGlobals.PluginList)
-            {
-                if(oPlugin is GeniePlugin.Interfaces.IPlugin)
-                {
-                    if ((oPlugin as GeniePlugin.Interfaces.IPlugin).Enabled)
-                    {
-                        try
-                        {
-                            sText = (oPlugin as GeniePlugin.Interfaces.IPlugin).ParseText(sText, sWindow);
-                        }
-                        /* TODO ERROR: Skipped IfDirectiveTrivia */
-                        catch (Exception ex)
-                        {
-                            GenieError.GeniePluginError((oPlugin as GeniePlugin.Interfaces.IPlugin), "ParseText", ex);
-                            (oPlugin as GeniePlugin.Interfaces.IPlugin).Enabled = false;
-                            /* TODO ERROR: Skipped ElseDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
-                        }
-                    }
-                }
-                else if(oPlugin is GeniePlugin.Plugins.IPlugin)
-                {
-                    if ((oPlugin as GeniePlugin.Plugins.IPlugin).Enabled)
-                    {
-                        try
-                        {
-                            sText = (oPlugin as GeniePlugin.Plugins.IPlugin).ParseText(sText, sWindow);
-                        }
-                        /* TODO ERROR: Skipped IfDirectiveTrivia */
-                        catch (Exception ex)
-                        {
-                            GenieError.GeniePluginError((oPlugin as GeniePlugin.Plugins.IPlugin), "ParseText", ex);
-                            (oPlugin as GeniePlugin.Plugins.IPlugin).Enabled = false;
-                            /* TODO ERROR: Skipped ElseDirectiveTrivia *//* TODO ERROR: Skipped DisabledTextTrivia *//* TODO ERROR: Skipped EndIfDirectiveTrivia */
-                        }
-                    }
-                }
-            }
-
+            if (ParsePluginTextHandler != null)
+                return ParsePluginTextHandler(sText, sWindow, m_oGlobals.PluginList, m_oGlobals.PluginsEnabled);
             return sText;
         }
 
@@ -3288,12 +3241,12 @@ namespace GenieClient.Genie
         {
             WindowTarget argoWindowTarget = 0;
             bool argbIsRoomOutput = false;
-            PrintTextWithParse(text, Color.White, Color.Transparent, oWindowTarget: argoWindowTarget, bIsRoomOutput: argbIsRoomOutput);
+            PrintTextWithParse(text, GenieColor.White, GenieColor.Transparent, oWindowTarget: argoWindowTarget, bIsRoomOutput: argbIsRoomOutput);
         }
 
         private void GameSocket_EventPrintError(string text)
         {
-            PrintTextToWindow(text, Color.Red, Color.Transparent);
+            PrintTextToWindow(text, GenieColor.Red, GenieColor.Transparent);
         }
 
         private bool m_bManualDisconnect = false;
