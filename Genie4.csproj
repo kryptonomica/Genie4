@@ -15,7 +15,7 @@
     <ApplicationIcon>Graphics\Taleweaver.ico</ApplicationIcon>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.vb;Genie.Core\**</DefaultItemExcludes>
     <LangVersion>latest</LangVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -202,6 +202,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Plugin\Plugins.vbproj" />
+    <ProjectReference Include="Genie.Core\Genie.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Libs\Antlr3.Runtime.dll" />

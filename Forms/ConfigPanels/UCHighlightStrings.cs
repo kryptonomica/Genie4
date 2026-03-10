@@ -134,8 +134,8 @@ namespace GenieClient
                 {
                     string sColor = TextBoxColor.Text.Substring(0, TextBoxColor.Text.IndexOf(",")).Trim();
                     string sBgColor = TextBoxColor.Text.Substring(TextBoxColor.Text.IndexOf(",") + 1).Trim();
-                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                    LabelExampleColor.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
+                    LabelExampleColor.BackColor = Genie.ColorCode.StringToColor(sBgColor).ToDrawingColor();
                     string sText = Genie.ColorCode.ColorToString(LabelExampleColor.ForeColor) + ", " + Genie.ColorCode.ColorToString(LabelExampleColor.BackColor);
                     if (sText.Contains("ControlText"))
                     {
@@ -146,7 +146,7 @@ namespace GenieClient
                 }
                 else
                 {
-                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(TextBoxColor.Text);
+                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(TextBoxColor.Text).ToDrawingColor();
                     LabelExampleColor.BackColor = Color.Black;
                     string sText = Genie.ColorCode.ColorToString(LabelExampleColor.ForeColor);
                     if (sText.Contains("ControlText"))
@@ -206,10 +206,10 @@ namespace GenieClient
 
                     li.SubItems.Add(oHighlight.ColorName);
                     li.SubItems.Add(oHighlight.CaseSensitive.ToString()); // Case Sensitive
-                    li.ForeColor = oHighlight.FgColor;
-                    if (oHighlight.BgColor != Color.Transparent)
+                    li.ForeColor = oHighlight.FgColor.ToDrawingColor();
+                    if (oHighlight.BgColor != GenieColor.Transparent)
                     {
-                        li.BackColor = oHighlight.BgColor;
+                        li.BackColor = oHighlight.BgColor.ToDrawingColor();
                     }
 
                     li.SubItems.Add(oHighlight.SoundFile);
@@ -227,10 +227,10 @@ namespace GenieClient
                     li.SubItems.Add("BeginsWith");
                     li.SubItems.Add(oHighlight.ColorName);
                     li.SubItems.Add(oHighlight.CaseSensitive.ToString());
-                    li.ForeColor = oHighlight.FgColor;
-                    if (oHighlight.BgColor != Color.Transparent)
+                    li.ForeColor = oHighlight.FgColor.ToDrawingColor();
+                    if (oHighlight.BgColor != GenieColor.Transparent)
                     {
-                        li.BackColor = oHighlight.BgColor;
+                        li.BackColor = oHighlight.BgColor.ToDrawingColor();
                     }
 
                     li.SubItems.Add(oHighlight.SoundFile);
@@ -248,10 +248,10 @@ namespace GenieClient
                     li.SubItems.Add("RegExp");
                     li.SubItems.Add(oHighlight.ColorName);
                     li.SubItems.Add(oHighlight.CaseSensitive.ToString());
-                    li.ForeColor = oHighlight.FgColor;
-                    if (oHighlight.BgColor != Color.Transparent)
+                    li.ForeColor = oHighlight.FgColor.ToDrawingColor();
+                    if (oHighlight.BgColor != GenieColor.Transparent)
                     {
-                        li.BackColor = oHighlight.BgColor;
+                        li.BackColor = oHighlight.BgColor.ToDrawingColor();
                     }
 
                     li.SubItems.Add(oHighlight.SoundFile);

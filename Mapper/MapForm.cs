@@ -110,8 +110,8 @@ namespace GenieClient.Mapper
         }
         public void UpdatePanelColor()
         {
-            PanelBase.BackColor = m_oGlobals.PresetList["automapper.panel"].BgColor;
-            PanelMap.BackColor = m_oGlobals.PresetList["automapper.panel"].BgColor;
+            PanelBase.BackColor = m_oGlobals.PresetList["automapper.panel"].BgColor.ToDrawingColor();
+            PanelMap.BackColor = m_oGlobals.PresetList["automapper.panel"].BgColor.ToDrawingColor();
             PanelMap.Invalidate();
         }
         public void UpdateGraph(Node n, NodeList nl, Direction dir)
@@ -676,7 +676,7 @@ namespace GenieClient.Mapper
                     string sColor = GetValue(xn, "color");
                     if (sColor.Length > 0)
                     {
-                        n.Color = Genie.ColorCode.StringToColor(sColor);
+                        n.Color = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
                     }
                     else
                     {
@@ -1545,16 +1545,16 @@ namespace GenieClient.Mapper
                 {
                     if (n.Position.Z <= m_CurrentLevelZ)
                     {
-                        var oColorLine = m_oGlobals.PresetList["automapper.line"].FgColor;
-                        var oColorLineStump = m_oGlobals.PresetList["automapper.linestump"].FgColor;
-                        var oColorLineClimb = m_oGlobals.PresetList["automapper.lineclimb"].FgColor;
-                        var oColorLineGo = m_oGlobals.PresetList["automapper.linego"].FgColor;
+                        var oColorLine = m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor();
+                        var oColorLineStump = m_oGlobals.PresetList["automapper.linestump"].FgColor.ToDrawingColor();
+                        var oColorLineClimb = m_oGlobals.PresetList["automapper.lineclimb"].FgColor.ToDrawingColor();
+                        var oColorLineGo = m_oGlobals.PresetList["automapper.linego"].FgColor.ToDrawingColor();
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
                         {
-                            oColorLine = m_oGlobals.PresetList["automapper.line"].BgColor;
-                            oColorLineStump = m_oGlobals.PresetList["automapper.linestump"].BgColor;
-                            oColorLineClimb = m_oGlobals.PresetList["automapper.lineclimb"].BgColor;
-                            oColorLineGo = m_oGlobals.PresetList["automapper.linego"].BgColor;
+                            oColorLine = m_oGlobals.PresetList["automapper.line"].BgColor.ToDrawingColor();
+                            oColorLineStump = m_oGlobals.PresetList["automapper.linestump"].BgColor.ToDrawingColor();
+                            oColorLineClimb = m_oGlobals.PresetList["automapper.lineclimb"].BgColor.ToDrawingColor();
+                            oColorLineGo = m_oGlobals.PresetList["automapper.linego"].BgColor.ToDrawingColor();
                         }
 
                         foreach (Arc a in n.Arcs)
@@ -1628,7 +1628,7 @@ namespace GenieClient.Mapper
                             {
                                 var pt = new Point3D(n.Position);
                                 pt.Offset(a.Direction, 10);
-                                var oLinePen = new Pen(m_oGlobals.PresetList["automapper.linestump"].FgColor);
+                                var oLinePen = new Pen(m_oGlobals.PresetList["automapper.linestump"].FgColor.ToDrawingColor());
                                 if (m_ToggleMoveNodes == true || m_ToggleRecording == true)
                                 {
                                     oLinePen = Pens.Red;
@@ -1659,14 +1659,14 @@ namespace GenieClient.Mapper
                     if (n.Position.Z < m_CurrentLevelZ)
                     {
                         var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
+                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
                         else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
 
-                        var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor;
+                        var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor();
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
                         {
-                            oColorRoom = m_oGlobals.PresetList["automapper.node"].BgColor; // Color.FromArgb(255, 255, 192) ' Base BG
-                            oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].BgColor;
+                            oColorRoom = m_oGlobals.PresetList["automapper.node"].BgColor.ToDrawingColor(); // Color.FromArgb(255, 255, 192) ' Base BG
+                            oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].BgColor.ToDrawingColor();
                         }
 
                         if (!Information.IsNothing(m_SelectedNodes.Find(n.ID)))
@@ -1677,11 +1677,11 @@ namespace GenieClient.Mapper
                         {
                             if (m_PathDestination.Equals(n))
                             {
-                                oColorRoom = m_oGlobals.PresetList["automapper.path"].FgColor;
+                                oColorRoom = m_oGlobals.PresetList["automapper.path"].FgColor.ToDrawingColor();
                             }
                             else if (n.State == Node.States.EndPath)
                             {
-                                oColorRoom = m_oGlobals.PresetList["automapper.path"].BgColor;
+                                oColorRoom = m_oGlobals.PresetList["automapper.path"].BgColor.ToDrawingColor();
                             }
                         }
 
@@ -1734,14 +1734,14 @@ namespace GenieClient.Mapper
                     if (n.Position.Z == m_CurrentLevelZ)
                     {
                         var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor; }
+                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
                         else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
-                        var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor;
+                        var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor();
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
                         {
-                            oColorRoom = m_oGlobals.PresetList["automapper.node"].BgColor;
+                            oColorRoom = m_oGlobals.PresetList["automapper.node"].BgColor.ToDrawingColor();
                             //oColorRoom = Color.FromArgb(255, 255, 192); // Base BG
-                            oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].BgColor;
+                            oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].BgColor.ToDrawingColor();
                         }
 
                         if (!Information.IsNothing(m_SelectedNodes.Find(n.ID)))
@@ -1752,11 +1752,11 @@ namespace GenieClient.Mapper
                         {
                             if (m_PathDestination.Equals(n))
                             {
-                                oColorRoom = m_oGlobals.PresetList["automapper.path"].FgColor;
+                                oColorRoom = m_oGlobals.PresetList["automapper.path"].FgColor.ToDrawingColor();
                             }
                             else if (n.State == Node.States.EndPath)
                             {
-                                oColorRoom = m_oGlobals.PresetList["automapper.path"].BgColor;
+                                oColorRoom = m_oGlobals.PresetList["automapper.path"].BgColor.ToDrawingColor();
                             }
                         }
 
@@ -1842,7 +1842,7 @@ namespace GenieClient.Mapper
                         // End If
 
                         var b = Brushes.White;
-                        var bt = new SolidBrush(m_oGlobals.PresetList["automapper.panel"].FgColor);
+                        var bt = new SolidBrush(m_oGlobals.PresetList["automapper.panel"].FgColor.ToDrawingColor());
                         if (m_SelectedLabels.Contains(l))
                         {
                             b = Brushes.Blue;
@@ -1888,7 +1888,7 @@ namespace GenieClient.Mapper
             // Draw lasso
             if (!Information.IsNothing(m_LassoStart))
             {
-                var p = new Pen(m_oGlobals.PresetList["automapper.line"].FgColor);
+                var p = new Pen(m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor());
                 p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                 e.Graphics.DrawRectangle(p, m_Lasso);
             }

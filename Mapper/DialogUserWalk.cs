@@ -61,18 +61,18 @@ namespace GenieClient
 
         public void Recolor(Globals.Presets.Preset window, Globals.Presets.Preset textbox, Globals.Presets.Preset button)
         {
-            BackColor = window.BgColor;
-            ForeColor = window.FgColor;
-            _TextboxAction.ForeColor = textbox.FgColor;
-            _TextboxAction.BackColor = textbox.BgColor;
-            _TextboxSuccess.ForeColor = textbox.FgColor;
-            _TextboxSuccess.BackColor = textbox.BgColor;
-            _TextboxRetry.ForeColor = textbox.FgColor;
-            _TextboxRetry.BackColor = textbox.BgColor;
-            OK_Button.ForeColor = button.FgColor;
-            OK_Button.BackColor = button.BgColor;
-            Cancel_Button.ForeColor = button.FgColor;
-            Cancel_Button.BackColor = button.BgColor;
+            BackColor = window.BgColor.ToDrawingColor();
+            ForeColor = window.FgColor.ToDrawingColor();
+            _TextboxAction.ForeColor = textbox.FgColor.ToDrawingColor();
+            _TextboxAction.BackColor = textbox.BgColor.ToDrawingColor();
+            _TextboxSuccess.ForeColor = textbox.FgColor.ToDrawingColor();
+            _TextboxSuccess.BackColor = textbox.BgColor.ToDrawingColor();
+            _TextboxRetry.ForeColor = textbox.FgColor.ToDrawingColor();
+            _TextboxRetry.BackColor = textbox.BgColor.ToDrawingColor();
+            OK_Button.ForeColor = button.FgColor.ToDrawingColor();
+            OK_Button.BackColor = button.BgColor.ToDrawingColor();
+            Cancel_Button.ForeColor = button.FgColor.ToDrawingColor();
+            Cancel_Button.BackColor = button.BgColor.ToDrawingColor();
         }
     }
 }

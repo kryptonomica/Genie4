@@ -38,14 +38,14 @@ namespace GenieClient
 
         public void Recolor(Globals.Presets.Preset window, Globals.Presets.Preset textbox, Globals.Presets.Preset button)
         {
-            BackColor = window.BgColor;
-            ForeColor = window.FgColor;
-            _TextboxClasses.ForeColor = textbox.FgColor;
-            _TextboxClasses.BackColor = textbox.BgColor;
-            OK_Button.ForeColor = button.FgColor;
-            OK_Button.BackColor = button.BgColor;
-            Cancel_Button.ForeColor = button.FgColor;
-            Cancel_Button.BackColor = button.BgColor;
+            BackColor = window.BgColor.ToDrawingColor();
+            ForeColor = window.FgColor.ToDrawingColor();
+            _TextboxClasses.ForeColor = textbox.FgColor.ToDrawingColor();
+            _TextboxClasses.BackColor = textbox.BgColor.ToDrawingColor();
+            OK_Button.ForeColor = button.FgColor.ToDrawingColor();
+            OK_Button.BackColor = button.BgColor.ToDrawingColor();
+            Cancel_Button.ForeColor = button.FgColor.ToDrawingColor();
+            Cancel_Button.BackColor = button.BgColor.ToDrawingColor();
         }
     }
 }

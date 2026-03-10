@@ -3,6 +3,18 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Project working files (synced via OneDrive, not repo)
+MEMORY.md
+extraction-plan.md
+extraction-progress.md
+mockup-avalonia.html
+
 # User-specific files
 *.rsuser
 *.suo

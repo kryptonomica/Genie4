@@ -138,26 +138,26 @@ namespace GenieClient
 
         private void RecolorUI()
         {
-            this._MenuStripMain.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            this._MenuStripMain.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            this._MenuStripMain.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            this._MenuStripMain.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             this._MenuStripMain.Renderer = new GenieClient.Forms.Components.MenuRenderer(m_oGlobals.PresetList);
 
-            this._ToolStripButtons.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            this._ToolStripButtons.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            this._ToolStripButtons.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            this._ToolStripButtons.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             this._ToolStripButtons.Renderer = new GenieClient.Forms.Components.MenuRenderer(m_oGlobals.PresetList);
 
-            this._TextBoxInput.BackColor = m_oGlobals.PresetList["ui.textbox"].BgColor;
-            this._TextBoxInput.ForeColor = m_oGlobals.PresetList["ui.textbox"].FgColor;
+            this._TextBoxInput.BackColor = m_oGlobals.PresetList["ui.textbox"].BgColor.ToDrawingColor();
+            this._TextBoxInput.ForeColor = m_oGlobals.PresetList["ui.textbox"].FgColor.ToDrawingColor();
 
-            this._StatusStripMain.BackColor = m_oGlobals.PresetList["ui.status"].BgColor;
-            this._StatusStripMain.ForeColor = m_oGlobals.PresetList["ui.status"].FgColor;
+            this._StatusStripMain.BackColor = m_oGlobals.PresetList["ui.status"].BgColor.ToDrawingColor();
+            this._StatusStripMain.ForeColor = m_oGlobals.PresetList["ui.status"].FgColor.ToDrawingColor();
 
             foreach (ToolStripMenuItem menu in _MenuStripMain.Items)
             {
                 foreach (ToolStripItem item in menu.DropDownItems)
                 {
-                    item.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-                    item.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+                    item.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+                    item.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
                     if (string.IsNullOrWhiteSpace(item.Text))
                     {
                         item.AutoSize = false;
@@ -177,15 +177,15 @@ namespace GenieClient
                 {
                     if (Updater.ClientIsCurrent)
                     {
-                        AddText("You are running the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("You are running the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                     else
                     {
 
-                        AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                         if (m_oGlobals.Config.AutoUpdate)
                         {
-                            AddText("AutoUpdate is Enabled. Exiting and launching Updater.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                            AddText("AutoUpdate is Enabled. Exiting and launching Updater.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                             if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
                             {
                                 System.Windows.Forms.Application.Exit();
@@ -761,7 +761,7 @@ namespace GenieClient
                     $"{m_oPluginNameToFile[Plugin.Name]} is the file which loaded. You can view its version in the Plugin menu.\r\n" +
                     $"{Path.GetFileName(AssemblyPath)} was not loaded. It reports its version as {Plugin.Version}.\r\n" +
                     $"Your plugin directory is at {Path.GetDirectoryName(AssemblyPath)}\r\n";
-                AddText(DuplicateText, m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+                AddText(DuplicateText, m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor());
             }
             else
             {
@@ -795,7 +795,7 @@ namespace GenieClient
                     $"{m_oPluginNameToFile[Plugin.Name]} is the file which loaded. You can view its version in the Plugin menu.\r\n" +
                     $"{Path.GetFileName(AssemblyPath)} was not loaded. It reports its version as {Plugin.Version}.\r\n" +
                     $"Your plugin directory is at {Path.GetDirectoryName(AssemblyPath)}\r\n";
-                AddText(DuplicateText, m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+                AddText(DuplicateText, m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor());
             }
             else
             {
@@ -1194,8 +1194,8 @@ namespace GenieClient
             PluginsToolStripMenuItem.DropDownItems.Clear();
             ToolStripMenuItem pluginDialogItem;
             pluginDialogItem = new ToolStripMenuItem();
-            pluginDialogItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            pluginDialogItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            pluginDialogItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            pluginDialogItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             pluginDialogItem.Name = "ToolStripMenuItemPluginDialog";
             pluginDialogItem.Text = "&Plugins...";
             pluginDialogItem.Click += PluginDialogItem_Click;
@@ -1203,16 +1203,16 @@ namespace GenieClient
 
             ToolStripMenuItem pluginUpdateItem;
             pluginUpdateItem = new ToolStripMenuItem();
-            pluginUpdateItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            pluginUpdateItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            pluginUpdateItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            pluginUpdateItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             pluginUpdateItem.Name = "ToolStripMenuItemPluginDialog";
             pluginUpdateItem.Text = "&Update Plugins";
             pluginUpdateItem.Click += updatePluginsToolStripMenuItem_Click;
             PluginsToolStripMenuItem.DropDownItems.Add(pluginUpdateItem);
 
             ToolStripMenuItem pluginSeparator = new ToolStripMenuItem();
-            pluginSeparator.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            pluginSeparator.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            pluginSeparator.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            pluginSeparator.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             pluginSeparator.Name = "ToolStripMenuItemPluginSeparator";
             PluginsToolStripMenuItem.DropDownItems.Add(pluginSeparator);
             int I = 1;
@@ -1221,8 +1221,8 @@ namespace GenieClient
                 if (!Information.IsNothing(oPlugin))
                 {
                     pluginDialogItem = new ToolStripMenuItem();
-                    pluginDialogItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-                    pluginDialogItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+                    pluginDialogItem.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+                    pluginDialogItem.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
                     if (oPlugin is GeniePlugin.Interfaces.IPlugin)
                     {
                         pluginDialogItem.Name = "ToolStripMenuItemPlugin" + (oPlugin as GeniePlugin.Interfaces.IPlugin).Name;
@@ -2269,12 +2269,12 @@ namespace GenieClient
                     {
                         string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                         string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                        m_oOutputMain.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
+                        m_oOutputMain.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor).ToDrawingColor();
                     }
                     else
                     {
-                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName);
+                        m_oOutputMain.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName).ToDrawingColor();
                     }
                 }
 
@@ -3574,8 +3574,8 @@ namespace GenieClient
         {
             WindowToolStripMenuItem.DropDownItems.Clear();
             var ti = new ToolStripMenuItem();
-            ti.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-            ti.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+            ti.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+            ti.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
             ti.Name = "ToolStripMenuItemWindowMain";
             ti.Text = "&1. " + m_oOutputMain.Text;
             ti.Tag = m_oOutputMain;
@@ -3590,8 +3590,8 @@ namespace GenieClient
             foreach (FormSkin fo in m_oFormList)
             {
                 ti = new ToolStripMenuItem();
-                ti.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor;
-                ti.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor;
+                ti.BackColor = m_oGlobals.PresetList["ui.menu"].BgColor.ToDrawingColor();
+                ti.ForeColor = m_oGlobals.PresetList["ui.menu"].FgColor.ToDrawingColor();
                 ti.Name = "ToolStripMenuItemWindow" + fo.Text;
                 ti.Text = "&" + I.ToString() + ". " + fo.Text;
                 ti.Tag = fo;
@@ -3743,12 +3743,12 @@ namespace GenieClient
                 {
                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                     string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                    oForm.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
+                    oForm.RichTextBoxOutput.BackColor = Genie.ColorCode.StringToColor(sBgColor).ToDrawingColor();
                 }
                 else
                 {
-                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName);
+                    oForm.RichTextBoxOutput.ForeColor = Genie.ColorCode.StringToColor(sColorName).ToDrawingColor();
                 }
             }
 
@@ -7221,16 +7221,16 @@ namespace GenieClient
                     {
                         case "roundtime":
                             {
-                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
-                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
+                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor.ToDrawingColor();
+                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor.ToDrawingColor();
                                 oRTControl.Refresh();
                                 break;
                             }
 
                         case "castbar":
                             {
-                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
-                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
+                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor.ToDrawingColor();
+                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor.ToDrawingColor();
                                 Castbar.Refresh();
                                 break;
                             }
@@ -7246,76 +7246,76 @@ namespace GenieClient
                             }
                         case "health":
                             {
-                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
-                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
+                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor.ToDrawingColor();
+                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor.ToDrawingColor();
+                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor.ToDrawingColor();
                                 ComponentBarsHealth.Refresh();
                                 break;
                             }
 
                         case "mana":
                             {
-                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
-                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
+                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor.ToDrawingColor();
+                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor.ToDrawingColor();
+                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor.ToDrawingColor();
                                 ComponentBarsMana.Refresh();
                                 break;
                             }
 
                         case "stamina":
                             {
-                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
-                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
+                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor.ToDrawingColor();
+                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor.ToDrawingColor();
+                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor.ToDrawingColor();
                                 ComponentBarsFatigue.Refresh();
                                 break;
                             }
 
                         case "spirit":
                             {
-                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
-                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
+                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor.ToDrawingColor();
+                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor.ToDrawingColor();
+                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor.ToDrawingColor();
                                 ComponentBarsSpirit.Refresh();
                                 break;
                             }
 
                         case "concentration":
                             {
-                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
-                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
+                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor.ToDrawingColor();
+                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor.ToDrawingColor();
+                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor.ToDrawingColor();
                                 ComponentBarsConc.Refresh();
                                 break;
                             }
 
                         case "all":
                             {
-                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor;
-                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor;
+                                oRTControl.ForegroundColor = m_oGlobals.PresetList["roundtime"].FgColor.ToDrawingColor();
+                                oRTControl.BackgroundColorRT = m_oGlobals.PresetList["roundtime"].BgColor.ToDrawingColor();
                                 oRTControl.Refresh();
-                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor;
-                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor;
+                                Castbar.ForegroundColor = m_oGlobals.PresetList["castbar"].FgColor.ToDrawingColor();
+                                Castbar.BackgroundColorRT = m_oGlobals.PresetList["castbar"].BgColor.ToDrawingColor();
                                 Castbar.Refresh();
-                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor;
-                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor;
-                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor;
+                                ComponentBarsHealth.ForegroundColor = m_oGlobals.PresetList["health"].FgColor.ToDrawingColor();
+                                ComponentBarsHealth.BackgroundColor = m_oGlobals.PresetList["health"].BgColor.ToDrawingColor();
+                                ComponentBarsHealth.BorderColor = m_oGlobals.PresetList["health"].BgColor.ToDrawingColor();
                                 ComponentBarsHealth.Refresh();
-                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor;
-                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor;
-                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor;
+                                ComponentBarsMana.ForegroundColor = m_oGlobals.PresetList["mana"].FgColor.ToDrawingColor();
+                                ComponentBarsMana.BackgroundColor = m_oGlobals.PresetList["mana"].BgColor.ToDrawingColor();
+                                ComponentBarsMana.BorderColor = m_oGlobals.PresetList["mana"].BgColor.ToDrawingColor();
                                 ComponentBarsMana.Refresh();
-                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor;
-                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor;
-                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor;
+                                ComponentBarsFatigue.ForegroundColor = m_oGlobals.PresetList["stamina"].FgColor.ToDrawingColor();
+                                ComponentBarsFatigue.BackgroundColor = m_oGlobals.PresetList["stamina"].BgColor.ToDrawingColor();
+                                ComponentBarsFatigue.BorderColor = m_oGlobals.PresetList["stamina"].BgColor.ToDrawingColor();
                                 ComponentBarsFatigue.Refresh();
-                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor;
-                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor;
-                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor;
+                                ComponentBarsSpirit.ForegroundColor = m_oGlobals.PresetList["spirit"].FgColor.ToDrawingColor();
+                                ComponentBarsSpirit.BackgroundColor = m_oGlobals.PresetList["spirit"].BgColor.ToDrawingColor();
+                                ComponentBarsSpirit.BorderColor = m_oGlobals.PresetList["spirit"].BgColor.ToDrawingColor();
                                 ComponentBarsSpirit.Refresh();
-                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor;
-                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor;
-                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor;
+                                ComponentBarsConc.ForegroundColor = m_oGlobals.PresetList["concentration"].FgColor.ToDrawingColor();
+                                ComponentBarsConc.BackgroundColor = m_oGlobals.PresetList["concentration"].BgColor.ToDrawingColor();
+                                ComponentBarsConc.BorderColor = m_oGlobals.PresetList["concentration"].BgColor.ToDrawingColor();
                                 ComponentBarsConc.Refresh();
                                 break;
                             }
@@ -8446,11 +8446,11 @@ namespace GenieClient
             {
                 if (Updater.ClientIsCurrent)
                 {
-                    AddText("You have the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor);
+                    AddText("You have the latest version of Genie.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor());
                 }
                 else
                 {
-                    AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText("An Update is Available.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     DialogResult response = MessageBox.Show("An Update is Available. Would you like to update?", "Rub the Bottle?", MessageBoxButtons.YesNoCancel);
                     if (response == DialogResult.Yes)
                     {
@@ -8459,7 +8459,7 @@ namespace GenieClient
                             response = MessageBox.Show("Genie will close and this will disconnect you from the game.", "Close Genie?", MessageBoxButtons.YesNoCancel);
                             if (response == DialogResult.Yes)
                             {
-                                AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                                AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                                 m_oGlobals.Config.Save();
                                 if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
                                 {
@@ -8470,7 +8470,7 @@ namespace GenieClient
                         }
                         else
                         {
-                            AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                            AddText("Saving Config and Exiting Genie to Update.", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                             m_oGlobals.Config.Save();
                             if (await Updater.RunUpdate(m_oGlobals.Config.AutoUpdateLamp))
                             {
@@ -8490,7 +8490,7 @@ namespace GenieClient
                 DialogResult response = MessageBox.Show("Genie will close and this will disconnect you from the game. Are you sure?", "Close Genie?", MessageBoxButtons.YesNoCancel);
                 if (response == DialogResult.Yes)
                 {
-                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
                     if (await Updater.ForceUpdate())
                     {
@@ -8501,7 +8501,7 @@ namespace GenieClient
             }
             else
             {
-                AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                 m_oGlobals.Config.Save();
                 if (await Updater.ForceUpdate())
                 {
@@ -8520,10 +8520,10 @@ namespace GenieClient
                     response = MessageBox.Show("Genie will close and this will disconnect you from the game. Are you sure?", "Close Genie?", MessageBoxButtons.YesNoCancel);
                     if (response == DialogResult.Yes)
                     {
-                        AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                         m_oGlobals.Config.AutoUpdate = false;
                         m_oGlobals.Config.Save(m_oGlobals.Config.ConfigDir + @"\settings.cfg");
-                        AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                         m_oGlobals.Config.Save();
                         if (await Updater.UpdateToTest(m_oGlobals.Config.AutoUpdateLamp))
                         {
@@ -8534,10 +8534,10 @@ namespace GenieClient
                 }
                 else
                 {
-                    AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText("Disabling Autoupdate.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.AutoUpdate = false;
                     m_oGlobals.Config.Save(m_oGlobals.Config.ConfigDir + @"\settings.cfg");
-                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText("Saving Config and Exiting Genie to Update.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
                     if (await Updater.UpdateToTest(m_oGlobals.Config.AutoUpdateLamp))
                     {
@@ -8554,15 +8554,15 @@ namespace GenieClient
             {
                 await Task.Run(async () =>
                 {
-                    AddText($"Saving Config and Updating Maps in {m_oGlobals.Config.MapDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText($"Saving Config and Updating Maps in {m_oGlobals.Config.MapDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
                     if (await Updater.UpdateMaps(m_oGlobals.Config.MapDir, m_oGlobals.Config.AutoUpdateLamp))
                     {
-                        AddText("Maps Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Maps Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                     else
                     {
-                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                 });
             }
@@ -8575,16 +8575,16 @@ namespace GenieClient
             {
                 await Task.Run(async () =>
                 {
-                    AddText($"Saving Config and Updating Plugins in {m_oGlobals.Config.PluginDir}\r\nRepo{m_oGlobals.Config.PluginRepo}", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText($"Saving Config and Updating Plugins in {m_oGlobals.Config.PluginDir}\r\nRepo{m_oGlobals.Config.PluginRepo}", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
                     if (await Updater.UpdatePlugins(m_oGlobals.Config.PluginDir, m_oGlobals.Config.AutoUpdateLamp))
                     {
-                        AddText("Plugins Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Plugins Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                         FormPlugin_ReloadPlugins();
                     }
                     else
                     {
-                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                 });
             }
@@ -8602,14 +8602,14 @@ namespace GenieClient
             {
                 await Task.Run(async () =>
                 {
-                    AddText($"Updating Scripts in {m_oGlobals.Config.ScriptDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText($"Updating Scripts in {m_oGlobals.Config.ScriptDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     if (await Updater.UpdateScripts(m_oGlobals.Config.ScriptDir, m_oGlobals.Config.ScriptRepo, m_oGlobals.Config.AutoUpdateLamp))
                     {
-                        AddText("Scripts Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Scripts Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                     else
                     {
-                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                 });
             }
@@ -8674,15 +8674,15 @@ namespace GenieClient
             {
                 await Task.Run(async () =>
                 {
-                    AddText($"Saving Config and Updating Art in {m_oGlobals.Config.ArtDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                    AddText($"Saving Config and Updating Art in {m_oGlobals.Config.ArtDir}\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     m_oGlobals.Config.Save();
                     if (await Updater.UpdateArt(m_oGlobals.Config.ArtDir, m_oGlobals.Config.ArtRepo, m_oGlobals.Config.AutoUpdateLamp))
                     {
-                        AddText("Art Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Art Updated.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                     else
                     {
-                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor, m_oGlobals.PresetList["scriptecho"].BgColor, Genie.Game.WindowTarget.Main);
+                        AddText("Something went wrong.\r\n", m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), Genie.Game.WindowTarget.Main);
                     }
                 });
             }

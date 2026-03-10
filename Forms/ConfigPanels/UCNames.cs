@@ -79,8 +79,8 @@ namespace GenieClient
                 {
                     string sColor = TextBoxColor.Text.Substring(0, TextBoxColor.Text.IndexOf(",")).Trim();
                     string sBgColor = TextBoxColor.Text.Substring(TextBoxColor.Text.IndexOf(",") + 1).Trim();
-                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(sColor);
-                    LabelExampleColor.BackColor = Genie.ColorCode.StringToColor(sBgColor);
+                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
+                    LabelExampleColor.BackColor = Genie.ColorCode.StringToColor(sBgColor).ToDrawingColor();
                     string sText = Genie.ColorCode.ColorToString(LabelExampleColor.ForeColor) + ", " + Genie.ColorCode.ColorToString(LabelExampleColor.BackColor);
                     if (sText.Contains("ControlText"))
                     {
@@ -91,7 +91,7 @@ namespace GenieClient
                 }
                 else
                 {
-                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(TextBoxColor.Text);
+                    LabelExampleColor.ForeColor = Genie.ColorCode.StringToColor(TextBoxColor.Text).ToDrawingColor();
                     LabelExampleColor.BackColor = Color.Black;
                     string sText = Genie.ColorCode.ColorToString(LabelExampleColor.ForeColor);
                     if (sText.Contains("ControlText"))
@@ -148,11 +148,11 @@ namespace GenieClient
                     li.Tag = de.Key.ToString();
                     Genie.Names.Name oName = (Genie.Names.Name)de.Value;
                     li.SubItems.Add(oName.ColorName);
-                    li.ForeColor = oName.FgColor;
+                    li.ForeColor = oName.FgColor.ToDrawingColor();
                     // MsgBox(li.BackColor.ToString)
-                    if (oName.BgColor != Color.Transparent)
+                    if (oName.BgColor != GenieColor.Transparent)
                     {
-                        li.BackColor = oName.BgColor;
+                        li.BackColor = oName.BgColor.ToDrawingColor();
                     }
                 }
             }

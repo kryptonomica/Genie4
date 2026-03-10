@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic;
@@ -26,11 +25,11 @@ namespace GenieClient.Genie
 
         public class Name
         {
-            public Color FgColor;
-            public Color BgColor;
+            public GenieColor FgColor;
+            public GenieColor BgColor;
             public string ColorName;
 
-            public Name(Color oColor, Color oBgColor, string sColorName = "")
+            public Name(GenieColor oColor, GenieColor oBgColor, string sColorName = "")
             {
                 FgColor = oColor;
                 BgColor = oBgColor;
@@ -46,8 +45,8 @@ namespace GenieClient.Genie
             }
             else
             {
-                Color oColor;
-                Color oBgcolor;
+                GenieColor oColor;
+                GenieColor oBgcolor;
                 if (sColorName.Contains(",") == true && sColorName.EndsWith(",") == false)
                 {
                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
@@ -58,7 +57,7 @@ namespace GenieClient.Genie
                 else
                 {
                     oColor = ColorCode.StringToColor(sColorName);
-                    oBgcolor = Color.Transparent;
+                    oBgcolor = GenieColor.Transparent;
                 }
 
                 if (base.ContainsKey(sKey) == true)
