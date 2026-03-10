@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.IO;
 
 namespace GenieClient
 {
-    static class LocalDirectory
+    public static class LocalDirectory
     {
         public static string Path = AppDomain.CurrentDomain.BaseDirectory;
         public static bool IsLocal = true;
+        public static string ApplicationName { get; set; } = "Genie";
 
         public static void CheckUserDirectory()
         {
@@ -22,7 +22,7 @@ namespace GenieClient
         public static void SetUserDataDirectory()
         {
             string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            dir = System.IO.Path.Combine(dir, Application.ProductName);
+            dir = System.IO.Path.Combine(dir, ApplicationName);
             if (!System.IO.Directory.Exists(dir))
             {
                 System.IO.Directory.CreateDirectory(dir);

@@ -277,22 +277,22 @@ namespace GenieClient.Genie
             {
                 if (iPickerColors[0] == 0)
                 {
-                    iPickerColors[0] = ColorCode.ColorToColorref(Color.DimGray);
-                    iPickerColors[1] = ColorCode.ColorToColorref(Color.DarkRed);
-                    iPickerColors[2] = ColorCode.ColorToColorref(Color.Green);
-                    iPickerColors[3] = ColorCode.ColorToColorref(Color.Olive);
-                    iPickerColors[4] = ColorCode.ColorToColorref(Color.DarkBlue);
-                    iPickerColors[5] = ColorCode.ColorToColorref(Color.Purple);
-                    iPickerColors[6] = ColorCode.ColorToColorref(Color.DarkCyan);
-                    iPickerColors[7] = ColorCode.ColorToColorref(Color.Silver);
-                    iPickerColors[8] = ColorCode.ColorToColorref(Color.Gray);
-                    iPickerColors[9] = ColorCode.ColorToColorref(Color.Red);
-                    iPickerColors[10] = ColorCode.ColorToColorref(Color.Lime);
-                    iPickerColors[11] = ColorCode.ColorToColorref(Color.Yellow);
-                    iPickerColors[12] = ColorCode.ColorToColorref(Color.Blue);
-                    iPickerColors[13] = ColorCode.ColorToColorref(Color.Magenta);
-                    iPickerColors[14] = ColorCode.ColorToColorref(Color.Cyan);
-                    iPickerColors[15] = ColorCode.ColorToColorref(Color.WhiteSmoke);
+                    iPickerColors[0] = ColorCode.ColorToColorref(GenieColor.DimGray);
+                    iPickerColors[1] = ColorCode.ColorToColorref(GenieColor.DarkRed);
+                    iPickerColors[2] = ColorCode.ColorToColorref(GenieColor.Green);
+                    iPickerColors[3] = ColorCode.ColorToColorref(GenieColor.Olive);
+                    iPickerColors[4] = ColorCode.ColorToColorref(GenieColor.DarkBlue);
+                    iPickerColors[5] = ColorCode.ColorToColorref(GenieColor.Purple);
+                    iPickerColors[6] = ColorCode.ColorToColorref(GenieColor.DarkCyan);
+                    iPickerColors[7] = ColorCode.ColorToColorref(GenieColor.Silver);
+                    iPickerColors[8] = ColorCode.ColorToColorref(GenieColor.Gray);
+                    iPickerColors[9] = ColorCode.ColorToColorref(GenieColor.Red);
+                    iPickerColors[10] = ColorCode.ColorToColorref(GenieColor.Lime);
+                    iPickerColors[11] = ColorCode.ColorToColorref(GenieColor.Yellow);
+                    iPickerColors[12] = ColorCode.ColorToColorref(GenieColor.Blue);
+                    iPickerColors[13] = ColorCode.ColorToColorref(GenieColor.Magenta);
+                    iPickerColors[14] = ColorCode.ColorToColorref(GenieColor.Cyan);
+                    iPickerColors[15] = ColorCode.ColorToColorref(GenieColor.WhiteSmoke);
                 }
 
                 return iPickerColors;

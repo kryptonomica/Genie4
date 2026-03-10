@@ -1376,7 +1376,7 @@ namespace GenieClient.Mapper
                                 if (sArg.Length > 0)
                                 {
                                     EchoText("[" + Name + "] Color set for current room: " + sArg, true);
-                                    m_LastNode.Color = Genie.ColorCode.StringToColor(sArg);
+                                    m_LastNode.Color = Genie.ColorCode.StringToColor(sArg).ToDrawingColor();
                                     if (!Information.IsNothing(m_Form))
                                     {
                                         m_Form.UpdateGraph(m_LastNode, m_Nodes, m_eLastMovement);

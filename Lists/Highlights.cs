@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Drawing;
 using System.Text.RegularExpressions;
 
 namespace GenieClient.Genie
@@ -67,8 +66,8 @@ namespace GenieClient.Genie
 
         public class Highlight
         {
-            public Color FgColor;
-            public Color BgColor;
+            public GenieColor FgColor;
+            public GenieColor BgColor;
             public string ColorName = string.Empty;
             public bool HighlightWholeRow = false;
             public bool CaseSensitive = true;
@@ -76,7 +75,7 @@ namespace GenieClient.Genie
             public bool IsActive = true;
             public string SoundFile = string.Empty;
 
-            public Highlight(Color oColor, string sColorName, Color oBgColor, bool bHighlightWholeRow, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
+            public Highlight(GenieColor oColor, string sColorName, GenieColor oBgColor, bool bHighlightWholeRow, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
             {
                 FgColor = oColor;
                 BgColor = oBgColor;
@@ -97,8 +96,8 @@ namespace GenieClient.Genie
             }
             else
             {
-                Color oColor;
-                Color oBgcolor;
+                GenieColor oColor;
+                GenieColor oBgcolor;
                 if (sColorName.Contains(",") == true && sColorName.EndsWith(",") == false)
                 {
                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
@@ -109,7 +108,7 @@ namespace GenieClient.Genie
                 else
                 {
                     oColor = ColorCode.StringToColor(sColorName);
-                    oBgcolor = Color.Transparent;
+                    oBgcolor = GenieColor.Transparent;
                 }
 
                 if (base.ContainsKey(sKey) == true)

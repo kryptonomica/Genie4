@@ -14,6 +14,8 @@ namespace GenieClient
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            LocalDirectory.ApplicationName = Application.ProductName;
+            CoreError.ErrorHandler = GenieError.Error;
 
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>

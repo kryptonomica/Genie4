@@ -319,13 +319,13 @@ namespace GenieClient.Genie
             public class Preset
             {
                 public string sKey;
-                public Color FgColor;
-                public Color BgColor;
+                public GenieColor FgColor;
+                public GenieColor BgColor;
                 public string sColorName;
                 public bool bHighlightLine = false;
                 public bool bSaveToFile = true;
 
-                public Preset(string sKey, Color oColor, Color oBgColor, string sColorName, string _bSaveToFile, bool highlightLine)
+                public Preset(string sKey, GenieColor oColor, GenieColor oBgColor, string sColorName, string _bSaveToFile, bool highlightLine)
                 {
                     this.sKey = sKey;
                     FgColor = oColor;
@@ -338,8 +338,8 @@ namespace GenieClient.Genie
 
             public void Add(string sKey, string sColorName, bool bSaveToFile = true, bool highlightLine = false)
             {
-                Color oColor;
-                Color oBgcolor;
+                GenieColor oColor;
+                GenieColor oBgcolor;
                 if (sColorName.Contains(",") == true && sColorName.EndsWith(",") == false)
                 {
                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
@@ -350,7 +350,7 @@ namespace GenieClient.Genie
                 else
                 {
                     oColor = ColorCode.StringToColor(sColorName);
-                    oBgcolor = Color.Transparent;
+                    oBgcolor = GenieColor.Transparent;
                 }
 
                 string arg_bSaveToFile = Conversions.ToString(bSaveToFile);
@@ -1185,14 +1185,14 @@ namespace GenieClient.Genie
             {
                 public string Text = string.Empty;
                 public string ColorName = string.Empty;
-                public Color FgColor;
-                public Color BgColor;
+                public GenieColor FgColor;
+                public GenieColor BgColor;
                 public bool CaseSensitive = true;
                 public string ClassName = string.Empty;
                 public bool IsActive = true;
                 public string SoundFile = string.Empty;
 
-                public Highlight(string Text, string ColorName, Color FgColor, Color BgColor, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
+                public Highlight(string Text, string ColorName, GenieColor FgColor, GenieColor BgColor, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
                 {
                     this.Text = Text;
                     this.ColorName = ColorName;
@@ -1257,8 +1257,8 @@ namespace GenieClient.Genie
                         sKey = sKey.Substring(0, sKey.Length - 1);
                     }
 
-                    Color oColor;
-                    Color oBgcolor;
+                    GenieColor oColor;
+                    GenieColor oBgcolor;
                     if (sColorName.Contains(",") == true && sColorName.EndsWith(",") == false)
                     {
                         string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
@@ -1269,7 +1269,7 @@ namespace GenieClient.Genie
                     else
                     {
                         oColor = ColorCode.StringToColor(sColorName);
-                        oBgcolor = Color.Transparent;
+                        oBgcolor = GenieColor.Transparent;
                     }
 
                     if (base.ContainsKey(sKey) == true)
@@ -1293,8 +1293,8 @@ namespace GenieClient.Genie
             {
                 public string Text = string.Empty;
                 public string ColorName = string.Empty;
-                public Color FgColor;
-                public Color BgColor;
+                public GenieColor FgColor;
+                public GenieColor BgColor;
                 public bool CaseSensitive = true;
                 public Regex HighlightRegex = null;
                 public string ClassName = string.Empty;
@@ -1304,7 +1304,7 @@ namespace GenieClient.Genie
                 public int Length { get { return Text.Length; } }
                 public int EndIndex { get { return StartIndex + Length; } }
 
-                public Highlight(string text, string ColorName, Color FgColor, Color BgColor, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
+                public Highlight(string text, string ColorName, GenieColor FgColor, GenieColor BgColor, bool CaseSensitive = true, string SoundFile = "", string ClassName = "", bool IsActive = true)
                 {
                     Text = text;
                     this.ColorName = ColorName;
@@ -1378,8 +1378,8 @@ namespace GenieClient.Genie
                         sKey = sKey.Substring(0, sKey.Length - 1);
                     }
 
-                    Color oColor;
-                    Color oBgcolor;
+                    GenieColor oColor;
+                    GenieColor oBgcolor;
                     if (sColorName.Contains(",") == true && sColorName.EndsWith(",") == false)
                     {
                         string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
@@ -1390,7 +1390,7 @@ namespace GenieClient.Genie
                     else
                     {
                         oColor = ColorCode.StringToColor(sColorName);
-                        oBgcolor = Color.Transparent;
+                        oBgcolor = GenieColor.Transparent;
                     }
 
                     if (base.ContainsKey(sKey) == true)

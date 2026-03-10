@@ -74,7 +74,7 @@ namespace GenieClient
                 myProcess.Start();
             }catch(Exception ex)
             {
-                GenieError.Error("Utility", $"Error Starting {sFileName}", ex.Message);
+                CoreError.Error("Utility", $"Error Starting {sFileName}", ex.Message);
                 return false;
             }
             // var myStreamReader = myProcess.StandardOutput;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using GenieClient;
 
 
 namespace GenieClient.Forms.Components
@@ -16,15 +17,15 @@ namespace GenieClient.Forms.Components
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
             base.OnRenderMenuItemBackground(e);
-            e.Item.ForeColor = Presets["ui.menu"].FgColor;
-            e.Item.BackColor = Presets["ui.menu"].BgColor;
+            e.Item.ForeColor = Presets["ui.menu"].FgColor.ToDrawingColor();
+            e.Item.BackColor = Presets["ui.menu"].BgColor.ToDrawingColor();
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
             base.OnRenderToolStripBackground(e);
-            e.ToolStrip.ForeColor = Presets["ui.menu"].FgColor;
-            e.ToolStrip.BackColor = Presets["ui.menu"].BgColor;
+            e.ToolStrip.ForeColor = Presets["ui.menu"].FgColor.ToDrawingColor();
+            e.ToolStrip.BackColor = Presets["ui.menu"].BgColor.ToDrawingColor();
         }
     }
 
@@ -38,7 +39,7 @@ namespace GenieClient.Forms.Components
 
         public override Color MenuItemPressedGradientBegin
         {
-            get { return Presets["ui.menu.highlight"].FgColor; }
+            get { return Presets["ui.menu.highlight"].FgColor.ToDrawingColor(); }
         }
 
         public override Color MenuItemPressedGradientMiddle
@@ -57,31 +58,31 @@ namespace GenieClient.Forms.Components
 
         public override Color MenuItemSelectedGradientEnd
         {
-            get { return Presets["ui.menu.highlight"].FgColor; }
+            get { return Presets["ui.menu.highlight"].FgColor.ToDrawingColor(); }
         }
 
-        public override Color CheckBackground 
+        public override Color CheckBackground
         {
-            get { return Presets["ui.menu.checked"].FgColor; }
+            get { return Presets["ui.menu.checked"].FgColor.ToDrawingColor(); }
         }
-        public override Color CheckSelectedBackground 
+        public override Color CheckSelectedBackground
         {
-            get { return Presets["ui.menu.highlight"].FgColor; }
-        }
-
-        public override Color ImageMarginGradientBegin 
-        {
-            get { return Presets["ui.menu"].BgColor; }
+            get { return Presets["ui.menu.highlight"].FgColor.ToDrawingColor(); }
         }
 
-        public override Color ImageMarginGradientMiddle 
+        public override Color ImageMarginGradientBegin
         {
-            get { return Presets["ui.menu"].BgColor; }
+            get { return Presets["ui.menu"].BgColor.ToDrawingColor(); }
+        }
+
+        public override Color ImageMarginGradientMiddle
+        {
+            get { return Presets["ui.menu"].BgColor.ToDrawingColor(); }
         }
 
         public override Color ImageMarginGradientEnd
         {
-            get { return Presets["ui.menu"].BgColor; }
+            get { return Presets["ui.menu"].BgColor.ToDrawingColor(); }
         }
     }
 }

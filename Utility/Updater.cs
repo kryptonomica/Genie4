@@ -54,22 +54,14 @@ namespace GenieClient
         {
             get
             {
-                try
-                {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-                    client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+                client.DefaultRequestHeaders.Add("User-Agent", "Genie Client Updater");
 
-                    var streamTask = client.GetStreamAsync(GitHubClientReleaseURL).Result;
-                    Release latest = JsonSerializer.Deserialize<Release>(streamTask);
+                var streamTask = client.GetStreamAsync(GitHubClientReleaseURL).Result;
+                Release latest = JsonSerializer.Deserialize<Release>(streamTask);
 
-                    return latest.Version;
-                }
-                catch
-                {
-                    //if we can't reach github just report current because we can't update
-                    return LocalClientVersion;
-                }
+                return latest.Version;
             }
         }
 

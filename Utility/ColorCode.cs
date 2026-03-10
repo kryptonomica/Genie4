@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Drawing;
-using Microsoft.VisualBasic;
 
 namespace GenieClient.Genie
 {
     public class ColorCode
     {
-        public static string ColorToString(Color oColor)
+        // === Primary methods (GenieColor-based) ===
+
+        public static string ColorToString(GenieColor oColor)
         {
-            if (oColor.IsNamedColor == true)
+            if (oColor.IsNamedColor)
             {
                 return oColor.Name;
             }
@@ -19,12 +19,12 @@ namespace GenieClient.Genie
             }
         }
 
-        public static string ColorToString(Color oFgColor, Color oBgColor)
+        public static string ColorToString(GenieColor oFgColor, GenieColor oBgColor)
         {
             return ColorToString(oFgColor) + ", " + ColorToString(oBgColor);
         }
 
-        public static Color StringToColor(string sColor)
+        public static GenieColor StringToColor(string sColor)
         {
             try
             {
@@ -36,12 +36,10 @@ namespace GenieClient.Genie
                 }
                 else if (IsColorString(sColor))
                 {
-                    return (Color)new ColorConverter().ConvertFromString(sColor);
+                    return GenieColor.FromName(sColor);
                 }
             }
-            #pragma warning disable CS0168
-            catch (Exception ex) // Unfortunately there is no specific error for convert errors.
-            #pragma warning restore CS0168
+            catch (Exception)
             {
                 return default;
             }
@@ -49,64 +47,56 @@ namespace GenieClient.Genie
             return default;
         }
 
-        public static int ColorToColorref(Color clr)
+        public static int ColorToColorref(GenieColor clr)
         {
-            return ColorTranslator.ToWin32(clr);
+            return clr.R | (clr.G << 8) | (clr.B << 16);
         }
 
-        public static string ColorToHex(Color oColor)
+        public static string ColorToHex(GenieColor oColor)
         {
-            byte argcolor = oColor.R;
-            byte argcolor1 = oColor.G;
-            byte argcolor2 = oColor.B;
-            return "#" + Hex2Digits(argcolor) + Hex2Digits(argcolor1) + Hex2Digits(argcolor2);
+            return "#" + oColor.R.ToString("X2") + oColor.G.ToString("X2") + oColor.B.ToString("X2");
         }
 
-        private static string Hex2Digits(byte color)
-        {
-            string sColor = Conversion.Hex(color);
-            if (sColor.Length == 1)
-            {
-                sColor = "0" + sColor;
-            }
-
-            return sColor;
-        }
-
-        public static Color ColorToLighter(Color oColor)
+        public static GenieColor ColorToLighter(GenieColor oColor)
         {
             int R = (int)(oColor.R / 1.299);
             int G = (int)(oColor.G / 1.587);
             int B = (int)(oColor.B / 1.114);
-            return Color.FromArgb(R, G, B);
+            return GenieColor.FromArgb(R, G, B);
         }
 
-        public static Color ColorToDarker(Color oColor)
+        public static GenieColor ColorToDarker(GenieColor oColor)
         {
             int R = (int)(oColor.R * 0.299);
             int G = (int)(oColor.G * 0.587);
             int B = (int)(oColor.B * 0.114);
-            return Color.FromArgb(R, G, B);
+            return GenieColor.FromArgb(R, G, B);
         }
 
-        public static Color ColorToGrayscale(Color oColor)
+        public static GenieColor ColorToGrayscale(GenieColor oColor)
         {
             int iColor = (int)(oColor.R * 0.299 + oColor.G * 0.587 + oColor.B * 0.114);
-            return Color.FromArgb(iColor, iColor, iColor);
+            return GenieColor.FromArgb(iColor, iColor, iColor);
         }
 
-        public static Color HexToColor(string sColor)
+        public static GenieColor HexToColor(string sColor)
         {
             try
             {
-                return ColorTranslator.FromHtml(sColor);
+                if (sColor.Length == 7 && sColor[0] == '#')
+                {
+                    int r = Convert.ToInt32(sColor.Substring(1, 2), 16);
+                    int g = Convert.ToInt32(sColor.Substring(3, 2), 16);
+                    int b = Convert.ToInt32(sColor.Substring(5, 2), 16);
+                    return GenieColor.FromArgb(r, g, b);
+                }
             }
-            #pragma warning disable CS0168
-            catch (Exception ex)
-            #pragma warning restore CS0168
+            catch (Exception)
             {
                 return default;
             }
+
+            return default;
         }
 
         public const string ValidHexChars = "1234567890aAbBcCdDeEfF";
@@ -129,27 +119,19 @@ namespace GenieClient.Genie
             return true;
         }
 
-        private static List<string> ColorList = null;
-
         public static bool IsColorString(string sText)
         {
-            if (Information.IsNothing(ColorList))
-            {
-                ColorList = new List<string>();
-                KnownColor c;
-                foreach (string s in Enum.GetNames(typeof(KnownColor)))
-                {
-                    c = (KnownColor)Enum.Parse(typeof(KnownColor), s);
-                    if (c > KnownColor.Transparent & c < KnownColor.ButtonFace)
-                    {
-                        ColorList.Add(s.ToLower());
-                    }
-                }
-            }
-
-            if (ColorList.Contains(sText.ToLower()))
-                return true;
-            return false;
+            return GenieColor.TryFromName(sText, out _);
         }
+
+        // === Temporary Color overloads (remove after all callers migrated) ===
+
+        public static string ColorToString(Color oColor) => ColorToString(oColor.ToGenieColor());
+        public static string ColorToString(Color oFgColor, Color oBgColor) => ColorToString(oFgColor.ToGenieColor(), oBgColor.ToGenieColor());
+        public static int ColorToColorref(Color clr) => ColorToColorref(clr.ToGenieColor());
+        public static string ColorToHex(Color oColor) => ColorToHex(oColor.ToGenieColor());
+        public static Color ColorToLighter(Color oColor) => ColorToLighter(oColor.ToGenieColor()).ToDrawingColor();
+        public static Color ColorToDarker(Color oColor) => ColorToDarker(oColor.ToGenieColor()).ToDrawingColor();
+        public static Color ColorToGrayscale(Color oColor) => ColorToGrayscale(oColor.ToGenieColor()).ToDrawingColor();
     }
 }

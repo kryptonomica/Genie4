@@ -4372,7 +4372,7 @@ namespace GenieClient
 
         private void PrintEcho(string sText)
         {
-            EventPrintText?.Invoke(sText + System.Environment.NewLine, m_oGlobals.PresetList["scriptecho"].FgColor, Color.Transparent);
+            EventPrintText?.Invoke(sText + System.Environment.NewLine, m_oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), Color.Transparent);
         }
 
         private void SendText(string text, bool queue = false, bool docommand = false)

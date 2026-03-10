@@ -298,12 +298,12 @@ namespace GenieClient.Genie
                                                 {
                                                     string sColor = sColorName.Substring(0, sColorName.IndexOf(",")).Trim();
                                                     string sBgColor = sColorName.Substring(sColorName.IndexOf(",") + 1).Trim();
-                                                    oColor = ColorCode.StringToColor(sColor);
-                                                    oBgcolor = ColorCode.StringToColor(sBgColor);
+                                                    oColor = ColorCode.StringToColor(sColor).ToDrawingColor();
+                                                    oBgcolor = ColorCode.StringToColor(sBgColor).ToDrawingColor();
                                                 }
                                                 else
                                                 {
-                                                    oColor = ColorCode.StringToColor(sColorName);
+                                                    oColor = ColorCode.StringToColor(sColorName).ToDrawingColor();
                                                     oBgcolor = Color.Transparent;
                                                 }
 
@@ -2365,7 +2365,7 @@ namespace GenieClient.Genie
                                                             }
                                                             catch(Exception ex)
                                                             {
-                                                                EchoColorText(ex.Message + System.Environment.NewLine, oGlobals.PresetList["scriptecho"].FgColor, oGlobals.PresetList["scriptecho"].BgColor, "");
+                                                                EchoColorText(ex.Message + System.Environment.NewLine, oGlobals.PresetList["scriptecho"].FgColor.ToDrawingColor(), oGlobals.PresetList["scriptecho"].BgColor.ToDrawingColor(), "");
                                                             }
                                                             break;
                                                         }
@@ -3153,7 +3153,7 @@ namespace GenieClient.Genie
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
                             string argsText = Conversions.ToString(de.Key) + System.Environment.NewLine;
-                            EchoColorText(argsText, ((Names.Name)de.Value).FgColor, ((Names.Name)de.Value).BgColor);
+                            EchoColorText(argsText, ((Names.Name)de.Value).FgColor.ToDrawingColor(), ((Names.Name)de.Value).BgColor.ToDrawingColor());
                             I += 1;
                         }
                     }
@@ -3194,7 +3194,7 @@ namespace GenieClient.Genie
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
                             string argsText = Conversions.ToString(de.Key) + System.Environment.NewLine;
-                            EchoColorText(argsText, ((Globals.Presets.Preset)de.Value).FgColor, ((Globals.Presets.Preset)de.Value).BgColor);
+                            EchoColorText(argsText, ((Globals.Presets.Preset)de.Value).FgColor.ToDrawingColor(), ((Globals.Presets.Preset)de.Value).BgColor.ToDrawingColor());
                             I += 1;
                         }
                     }
@@ -3239,7 +3239,7 @@ namespace GenieClient.Genie
                             if (((Highlights.Highlight)de.Value).HighlightWholeRow == false)
                             {
                                 string argsText = Conversions.ToString("[" + ((Highlights.Highlight)de.Value).ClassName + ":" + Interaction.IIf(((Highlights.Highlight)de.Value).IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                                EchoColorText(argsText, ((Highlights.Highlight)de.Value).FgColor, ((Highlights.Highlight)de.Value).BgColor);
+                                EchoColorText(argsText, ((Highlights.Highlight)de.Value).FgColor.ToDrawingColor(), ((Highlights.Highlight)de.Value).BgColor.ToDrawingColor());
                             }
 
                             I += 1;
@@ -3275,7 +3275,7 @@ namespace GenieClient.Genie
                             if (((Highlights.Highlight)de.Value).HighlightWholeRow == true)
                             {
                                 string argsText1 = Conversions.ToString("[" + ((Highlights.Highlight)de.Value).ClassName + ":" + Interaction.IIf(((Highlights.Highlight)de.Value).IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                                EchoColorText(argsText1, ((Highlights.Highlight)de.Value).FgColor, ((Highlights.Highlight)de.Value).BgColor);
+                                EchoColorText(argsText1, ((Highlights.Highlight)de.Value).FgColor.ToDrawingColor(), ((Highlights.Highlight)de.Value).BgColor.ToDrawingColor());
                             }
 
                             I += 1;
@@ -3309,7 +3309,7 @@ namespace GenieClient.Genie
                         {
                             Globals.HighlightLineBeginsWith.Highlight oHighlight = (Globals.HighlightLineBeginsWith.Highlight)de.Value;
                             string argsText2 = Conversions.ToString("[" + oHighlight.ClassName + ":" + Interaction.IIf(oHighlight.IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                            EchoColorText(argsText2, oHighlight.FgColor, oHighlight.BgColor);
+                            EchoColorText(argsText2, oHighlight.FgColor.ToDrawingColor(), oHighlight.BgColor.ToDrawingColor());
                             I += 1;
                         }
                     }
@@ -3341,7 +3341,7 @@ namespace GenieClient.Genie
                         {
                             Globals.HighlightRegExp.Highlight oHighlight = (Globals.HighlightRegExp.Highlight)de.Value;
                             string argsText3 = Conversions.ToString("[" + oHighlight.ClassName + ":" + Interaction.IIf(oHighlight.IsActive, "ON", "OFF") + "] " + Conversions.ToString(de.Key) + System.Environment.NewLine);
-                            EchoColorText(argsText3, oHighlight.FgColor, oHighlight.BgColor);
+                            EchoColorText(argsText3, oHighlight.FgColor.ToDrawingColor(), oHighlight.BgColor.ToDrawingColor());
                             I += 1;
                         }
                     }

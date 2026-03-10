@@ -56,7 +56,7 @@ namespace GenieClient
         public Pen GridColor { 
             get 
             { 
-                return new Pen(_Globals.PresetList["automapper.panel"].BgColor); 
+                return new Pen(_Globals.PresetList["automapper.panel"].BgColor.ToDrawingColor());
             } 
         }
     }

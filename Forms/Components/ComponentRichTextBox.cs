@@ -399,14 +399,14 @@ namespace GenieClient
             }
         }
 
-        private Color m_oEmptyColor = default;
+        private GenieColor m_oEmptyColor = default;
 
         private void AddToBuffer(string sText, Color oColor, Color oBgColor, bool bMono = false, Font oFont = null)
         {
             m_oRichTextBuffer.SelectionLength = 0;
             m_oRichTextBuffer.SelectionStart = int.MaxValue;
             int startIndex = m_oRichTextBuffer.SelectionStart;
-            if (oColor != Color.Transparent & oColor != m_oEmptyColor)
+            if (oColor != Color.Transparent & oColor != m_oEmptyColor.ToDrawingColor())
             {
                 m_oRichTextBuffer.SelectionColor = oColor;
             }
@@ -415,7 +415,7 @@ namespace GenieClient
                 m_oRichTextBuffer.SelectionColor = m_oRichTextBuffer.ForeColor;
             }
 
-            if (oBgColor != Color.Transparent & oBgColor != m_oEmptyColor)
+            if (oBgColor != Color.Transparent & oBgColor != m_oEmptyColor.ToDrawingColor())
             {
                 m_oRichTextBuffer.SelectionBackColor = oBgColor;
             }
@@ -486,13 +486,13 @@ namespace GenieClient
                         
                         m_oRichTextBuffer.SelectionStart = StartIndex + oGroup.Index - iDiff;
                         m_oRichTextBuffer.SelectionLength = oGroup.Length;
-                        if (Highlight.FgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+                        if (Highlight.FgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionColor = Highlight.FgColor;
+                            m_oRichTextBuffer.SelectionColor = Highlight.FgColor.ToDrawingColor();
                         }
-                        if (Highlight.BgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+                        if (Highlight.BgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor;
+                            m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor.ToDrawingColor();
                         }
                     }
                 }
@@ -500,14 +500,14 @@ namespace GenieClient
                 {
                     m_oRichTextBuffer.SelectionStart = StartIndex - iDiff;
                     m_oRichTextBuffer.SelectionLength = oMatch.Length;
-                    if (Highlight.FgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+                    if (Highlight.FgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                     {
-                        m_oRichTextBuffer.SelectionColor = Highlight.FgColor;
+                        m_oRichTextBuffer.SelectionColor = Highlight.FgColor.ToDrawingColor();
                     }
 
-                    if (Highlight.BgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+                    if (Highlight.BgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                     {
-                        m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor;
+                        m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor.ToDrawingColor();
                     }
                 }
                 if (Conversions.ToBoolean(Highlight.SoundFile.Length > 0 && m_oParentForm.Globals.Config.bPlaySounds))
@@ -533,18 +533,18 @@ namespace GenieClient
                 {
                     m_oRichTextBuffer.SelectionStart = oMatch.Groups[i].Index;
                     m_oRichTextBuffer.SelectionLength = oMatch.Groups[i].Length;
-                    if (Highlight.FgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+                    if (Highlight.FgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                     {
-                        m_oRichTextBuffer.SelectionColor = Highlight.FgColor;
+                        m_oRichTextBuffer.SelectionColor = Highlight.FgColor.ToDrawingColor();
                     }
-    
-                    if (Highlight.BgColor != Color.Transparent & Highlight.FgColor != m_oEmptyColor)
+
+                    if (Highlight.BgColor != GenieColor.Transparent & Highlight.FgColor != m_oEmptyColor)
                     {
-                        m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor;
+                        m_oRichTextBuffer.SelectionBackColor = Highlight.BgColor.ToDrawingColor();
                     }
                 }
             }
-            
+
         }
 
         private void ParseVolatileHighlights(List<VolatileHighlight> highlightList)
@@ -585,14 +585,14 @@ namespace GenieClient
                         m_oRichTextBuffer.SelectionLength = 0;
                     }
 
-                    if (m_oParentForm.Globals.PresetList[highlight.Preset].FgColor != Color.Transparent)
+                    if (m_oParentForm.Globals.PresetList[highlight.Preset].FgColor != GenieColor.Transparent)
                     {
-                        m_oRichTextBuffer.SelectionColor = (Color)m_oParentForm.Globals.PresetList[highlight.Preset].FgColor;
+                        m_oRichTextBuffer.SelectionColor = m_oParentForm.Globals.PresetList[highlight.Preset].FgColor.ToDrawingColor();
                     }
 
-                    if (m_oParentForm.Globals.PresetList[highlight.Preset].BgColor != Color.Transparent)
+                    if (m_oParentForm.Globals.PresetList[highlight.Preset].BgColor != GenieColor.Transparent)
                     {
-                        m_oRichTextBuffer.SelectionBackColor = (Color)m_oParentForm.Globals.PresetList[highlight.Preset].BgColor;
+                        m_oRichTextBuffer.SelectionBackColor = m_oParentForm.Globals.PresetList[highlight.Preset].BgColor.ToDrawingColor();
                     }
 
                     lineIndex += 1;
@@ -617,14 +617,14 @@ namespace GenieClient
                         oHighlightString = (Highlights.Highlight)m_oParentForm.Globals.HighlightList[oMatch.Value];
                         m_oRichTextBuffer.SelectionStart = oMatch.Index;
                         m_oRichTextBuffer.SelectionLength = oMatch.Length;
-                        if (oHighlightString.FgColor != Color.Transparent & oHighlightString.FgColor != m_oEmptyColor)
+                        if (oHighlightString.FgColor != GenieColor.Transparent & oHighlightString.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionColor = oHighlightString.FgColor;
+                            m_oRichTextBuffer.SelectionColor = oHighlightString.FgColor.ToDrawingColor();
                         }
 
-                        if (oHighlightString.BgColor != Color.Transparent & oHighlightString.FgColor != m_oEmptyColor)
+                        if (oHighlightString.BgColor != GenieColor.Transparent & oHighlightString.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionBackColor = oHighlightString.BgColor;
+                            m_oRichTextBuffer.SelectionBackColor = oHighlightString.BgColor.ToDrawingColor();
                         }
 
                         if (Conversions.ToBoolean(oHighlightString.SoundFile.Length > 0 && m_oParentForm.Globals.Config.bPlaySounds))
@@ -665,14 +665,14 @@ namespace GenieClient
                         oName = (Names.Name)m_oParentForm.Globals.NameList[oMatch.Value];
                         m_oRichTextBuffer.SelectionStart = oMatch.Index;
                         m_oRichTextBuffer.SelectionLength = oMatch.Length;
-                        if (oName.FgColor != Color.Transparent & oName.FgColor != m_oEmptyColor)
+                        if (oName.FgColor != GenieColor.Transparent & oName.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionColor = oName.FgColor;
+                            m_oRichTextBuffer.SelectionColor = oName.FgColor.ToDrawingColor();
                         }
 
-                        if (oName.BgColor != Color.Transparent & oName.FgColor != m_oEmptyColor)
+                        if (oName.BgColor != GenieColor.Transparent & oName.FgColor != m_oEmptyColor)
                         {
-                            m_oRichTextBuffer.SelectionBackColor = oName.BgColor;
+                            m_oRichTextBuffer.SelectionBackColor = oName.BgColor.ToDrawingColor();
                         }
                     }
                 }

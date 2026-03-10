@@ -40,7 +40,7 @@ namespace GenieClient.Genie
                 }
                 catch (Exception ex)
                 {
-                    GenieError.Error("LogText", ex.Message, ex.ToString());
+                    CoreError.Error("LogText", ex.Message, ex.ToString());
                     return false;
                 }
                 finally
@@ -80,7 +80,7 @@ namespace GenieClient.Genie
                 }
                 catch (Exception ex)
                 {
-                    GenieError.Error("LogLine", ex.Message, ex.ToString());
+                    CoreError.Error("LogLine", ex.Message, ex.ToString());
                     return false;
                 }
                 finally

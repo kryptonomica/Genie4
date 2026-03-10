@@ -491,8 +491,8 @@ namespace GenieClient.Genie
                 Color bgcolor;
                 if (bUserInput == true)
                 {
-                    color = m_oGlobals.PresetList["inputuser"].FgColor;
-                    bgcolor = m_oGlobals.PresetList["inputuser"].BgColor;
+                    color = m_oGlobals.PresetList["inputuser"].FgColor.ToDrawingColor();
+                    bgcolor = m_oGlobals.PresetList["inputuser"].BgColor.ToDrawingColor();
                     if (!sText.StartsWith(Conversions.ToString(m_oGlobals.Config.cMyCommandChar))) // Skip user commands
                     {
                         m_oGlobals.VariableList["lastinput"] = sText;
@@ -503,8 +503,8 @@ namespace GenieClient.Genie
                 }
                 else
                 {
-                    color = m_oGlobals.PresetList["inputother"].FgColor;
-                    bgcolor = m_oGlobals.PresetList["inputother"].BgColor;
+                    color = m_oGlobals.PresetList["inputother"].FgColor.ToDrawingColor();
+                    bgcolor = m_oGlobals.PresetList["inputother"].BgColor.ToDrawingColor();
                 }
 
                 string argsText = sShowText + System.Environment.NewLine;
@@ -934,20 +934,20 @@ namespace GenieClient.Genie
                         {
                             string argsText = "[" + m_sRoomTitle + "]" + Constants.vbCrLf;
                             bool argbIsRoomOutput = true;
-                            PrintTextWithParse(argsText, m_oGlobals.PresetList["roomname"].FgColor, m_oGlobals.PresetList["roomname"].BgColor, false, targetRoom, argbIsRoomOutput);
+                            PrintTextWithParse(argsText, m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor(), false, targetRoom, argbIsRoomOutput);
                         }
                         else
                         {
                             string argsText1 = "[Unknown Room]" + Constants.vbCrLf;
                             bool argbIsRoomOutput1 = true;
-                            PrintTextWithParse(argsText1, m_oGlobals.PresetList["roomname"].FgColor, m_oGlobals.PresetList["roomname"].BgColor, false, targetRoom, argbIsRoomOutput1);
+                            PrintTextWithParse(argsText1, m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor(), false, targetRoom, argbIsRoomOutput1);
                         }
 
                         if (Strings.Len(m_sRoomDesc) > 0)
                         {
                             string argsText2 = m_sRoomDesc + System.Environment.NewLine;
                             bool argbIsRoomOutput2 = true;
-                            PrintTextWithParse(argsText2, m_oGlobals.PresetList["roomdesc"].FgColor, m_oGlobals.PresetList["roomdesc"].BgColor, false, WindowTarget.Room, argbIsRoomOutput2);
+                            PrintTextWithParse(argsText2, m_oGlobals.PresetList["roomdesc"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["roomdesc"].BgColor.ToDrawingColor(), false, WindowTarget.Room, argbIsRoomOutput2);
                         }
 
                         if (Strings.Len(m_sRoomObjs) > 0)
@@ -1576,7 +1576,7 @@ namespace GenieClient.Genie
                                         string argsText = GetTextFromXML(oXmlNode) + System.Environment.NewLine;
                                         bool argbIsRoomOutput = false;
                                         WindowTarget windowTarget = WindowTarget.Thoughts;
-                                        PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].FgColor, m_oGlobals.PresetList["thoughts"].BgColor, false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
+                                        PrintTextWithParse(argsText, m_oGlobals.PresetList["thoughts"].FgColor.ToDrawingColor(), m_oGlobals.PresetList["thoughts"].BgColor.ToDrawingColor(), false, windowTarget, bIsRoomOutput: argbIsRoomOutput);
                                         break;
                                     }
 
@@ -2701,16 +2701,16 @@ namespace GenieClient.Genie
                     {
                         case "roomName":
                             {
-                                color = m_oGlobals.PresetList["roomname"].FgColor;
-                                bgcolor = m_oGlobals.PresetList["roomname"].BgColor;
+                                color = m_oGlobals.PresetList["roomname"].FgColor.ToDrawingColor();
+                                bgcolor = m_oGlobals.PresetList["roomname"].BgColor.ToDrawingColor();
                                 m_oLastFgColor = color;
                                 break;
                             }
 
                         case "roomDesc":
                             {
-                                color = m_oGlobals.PresetList["roomdesc"].FgColor;
-                                bgcolor = m_oGlobals.PresetList["roomdesc"].BgColor;
+                                color = m_oGlobals.PresetList["roomdesc"].FgColor.ToDrawingColor();
+                                bgcolor = m_oGlobals.PresetList["roomdesc"].BgColor.ToDrawingColor();
                                 m_oLastFgColor = color;
                                 break;
                             }
@@ -2745,8 +2745,8 @@ namespace GenieClient.Genie
                             {
                                 if (sText.StartsWith(o.Text, !o.CaseSensitive, null) == true)
                                 {
-                                    color = o.FgColor;
-                                    bgcolor = o.BgColor;
+                                    color = o.FgColor.ToDrawingColor();
+                                    bgcolor = o.BgColor.ToDrawingColor();
                                     m_oLastFgColor = color;
                                     if (o.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
                                         Sound.PlayWaveFile(o.SoundFile);
@@ -2774,8 +2774,8 @@ namespace GenieClient.Genie
                         if (m_oGlobals.HighlightList.Contains(oMatch.Value))
                         {
                             oHighlightString = (Highlights.Highlight)m_oGlobals.HighlightList[oMatch.Value];
-                            color = oHighlightString.FgColor;
-                            bgcolor = oHighlightString.BgColor;
+                            color = oHighlightString.FgColor.ToDrawingColor();
+                            bgcolor = oHighlightString.BgColor.ToDrawingColor();
                             m_oLastFgColor = color;
                             if (oHighlightString.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
                                 Sound.PlayWaveFile(oHighlightString.SoundFile);
@@ -3039,8 +3039,8 @@ namespace GenieClient.Genie
 
             if (targetwindow == WindowTarget.Familiar)
             {
-                color = m_oGlobals.PresetList["familiar"].FgColor;
-                bgcolor = m_oGlobals.PresetList["familiar"].BgColor;
+                color = m_oGlobals.PresetList["familiar"].FgColor.ToDrawingColor();
+                bgcolor = m_oGlobals.PresetList["familiar"].BgColor.ToDrawingColor();
             }
 
             var tempVar = false;
