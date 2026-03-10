@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualBasic;
@@ -222,7 +221,7 @@ namespace GenieClient.Mapper
             set
             {
                 m_sText = value;
-                m_Rect.Width = 0; // Reset label size
+                RectWidth = 0; // Reset label size
             }
         }
 
@@ -241,26 +240,14 @@ namespace GenieClient.Mapper
             }
         }
 
-        private RectangleF m_Rect = new RectangleF();
-
-        public RectangleF Rectangle
-        {
-            get
-            {
-                return m_Rect;
-            }
-
-            set
-            {
-                m_Rect = value;
-            }
-        }
+        public float RectX { get; set; }
+        public float RectY { get; set; }
+        public float RectWidth { get; set; }
+        public float RectHeight { get; set; }
 
         public void ClearRectangle()
         {
-            if (Information.IsNothing(m_Rect))
-                m_Rect = new RectangleF();
-            m_Rect.Width = 0;
+            RectWidth = 0;
         }
 
         public Label()
@@ -762,9 +749,9 @@ namespace GenieClient.Mapper
             }
         }
 
-        private Color m_Color = Color.White;
+        private GenieColor m_Color = GenieColor.White;
 
-        public Color Color
+        public GenieColor Color
         {
             get
             {
@@ -1500,7 +1487,7 @@ namespace GenieClient.Mapper
             return default;
         }
 
-        public Rectangle GetMapSize()
+        public (int Width, int Height) GetMapSize()
         {
             int iLowestX = 0;
             int iHighestX = 0;
@@ -1533,7 +1520,7 @@ namespace GenieClient.Mapper
                 iLowestY = 0;
             }
 
-            return new Rectangle(0, 0, iHighestX - iLowestX + 40, iHighestY - iLowestY + 40);
+            return (iHighestX - iLowestX + 40, iHighestY - iLowestY + 40);
         }
 
         public Point3D GetOffset()

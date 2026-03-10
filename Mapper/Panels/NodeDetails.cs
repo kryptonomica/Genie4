@@ -147,7 +147,7 @@ namespace GenieClient
                 m_Node.Descriptions = oDescs;
                 m_Node.Note = TextBoxNote.Text;
                 m_Node.IsLabelFile = m_Node.Note.ToLower().Contains(".xml");
-                m_Node.Color = ColorPicker1.Color;
+                m_Node.Color = ColorPicker1.Color.ToGenieColor();
                 UpdateMap?.Invoke();
             }
             else // New Node
@@ -164,7 +164,7 @@ namespace GenieClient
                 oNode.Descriptions = oDescs;
                 oNode.Note = TextBoxNote.Text;
                 oNode.IsLabelFile = oNode.Note.ToLower().Contains(".xml");
-                oNode.Color = ColorPicker1.Color;
+                oNode.Color = ColorPicker1.Color.ToGenieColor();
                 AddNode?.Invoke(oNode);
             }
         }

@@ -13,18 +13,7 @@ namespace GenieClient.Genie
 {
     public class Command
     {
-        // Platform callbacks for Sound (P/Invoke on Windows)
-        public static Action<string> PlayWaveFile { get; set; }
-        public static Action<string> PlayWaveSystem { get; set; }
-        public static Action StopPlaying { get; set; }
-
-        // Platform callbacks for Macros (depends on System.Windows.Forms.Keys)
-        public static Action MacroSave { get; set; }
-        public static Action MacroLoad { get; set; }
-        public static Func<string, string, bool> MacroAdd { get; set; }
-        public static Func<string, int> MacroRemove { get; set; }
-        public static Func<object, string> MacroKeyToString { get; set; }
-        public static Func<object, string> MacroValueAction { get; set; }
+        public static IAudioService Audio { get; set; }
 
         public event EventReconnectEventHandler EventReconnect;
 
@@ -394,6 +383,50 @@ namespace GenieClient.Genie
                                             break;
                                         }
 
+                                    case "recordsession":
+                                    case "rs":
+                                        {
+                                            string subCmd = (oArgs.Count > 1) ? oArgs[1].ToString().ToLower() : "status";
+                                            switch (subCmd)
+                                            {
+                                                case "start":
+                                                case "on":
+                                                    {
+                                                        string charName = Conversions.ToString(oGlobals.VariableList["charactername"]);
+                                                        string gameName = Conversions.ToString(oGlobals.VariableList["game"]);
+                                                        string path = SessionLogger.Instance.Start(charName, gameName);
+                                                        EchoColorText("Session recording STARTED." + System.Environment.NewLine +
+                                                            "File: " + path + System.Environment.NewLine,
+                                                            GenieColor.LimeGreen, GenieColor.Transparent);
+                                                        break;
+                                                    }
+                                                case "stop":
+                                                case "off":
+                                                    {
+                                                        if (SessionLogger.Instance.IsRecording)
+                                                        {
+                                                            string filePath = SessionLogger.Instance.CurrentFilePath;
+                                                            SessionLogger.Instance.Stop();
+                                                            EchoColorText("Session recording STOPPED." + System.Environment.NewLine +
+                                                                "File saved: " + filePath + System.Environment.NewLine,
+                                                                GenieColor.Yellow, GenieColor.Transparent);
+                                                        }
+                                                        else
+                                                        {
+                                                            EchoText("Session recording is not active." + System.Environment.NewLine);
+                                                        }
+                                                        break;
+                                                    }
+                                                default:
+                                                    {
+                                                        EchoText(SessionLogger.Instance.GetStatus() + System.Environment.NewLine);
+                                                        EchoText("Usage: #recordsession start | stop | status" + System.Environment.NewLine);
+                                                        break;
+                                                    }
+                                            }
+                                            break;
+                                        }
+
                                     case "connect":
                                         {
                                             Connect(oArgs);
@@ -552,7 +585,7 @@ namespace GenieClient.Genie
                                                         case "macros":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                MacroSave?.Invoke();
+                                                                oGlobals.MacroList.Save();
                                                                 break;
                                                             }
 
@@ -628,7 +661,7 @@ namespace GenieClient.Genie
                                                                 EchoText("Settings Saved" + System.Environment.NewLine);
                                                                 oGlobals.Config.Save(oGlobals.Config.ConfigDir + @"\settings.cfg");
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                MacroSave?.Invoke();
+                                                                oGlobals.MacroList.Save();
                                                                 EchoText("Substitutes Saved" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Save(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
                                                                 EchoText("Gags Saved" + System.Environment.NewLine);
@@ -714,7 +747,7 @@ namespace GenieClient.Genie
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                MacroLoad?.Invoke();
+                                                                oGlobals.MacroList.Load();
                                                                 break;
                                                             }
 
@@ -802,7 +835,7 @@ namespace GenieClient.Genie
                                                                 oGlobals.Config.Load();
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
                                                                 oGlobals.MacroList.Clear();
-                                                                MacroLoad?.Invoke();
+                                                                oGlobals.MacroList.Load();
                                                                 EchoText("Substitutes Loaded" + System.Environment.NewLine);
                                                                 oGlobals.SubstituteList.Clear();
                                                                 oGlobals.SubstituteList.Load(oGlobals.Config.ConfigDir + @"\substitutes.cfg");
@@ -1563,11 +1596,11 @@ namespace GenieClient.Genie
                                                 string sSound = GetArgumentString(sRow);
                                                 if ((sSound.ToLower() ?? "") == "stop")
                                                 {
-                                                    StopPlaying?.Invoke();
+                                                    Audio?.StopPlaying();
                                                 }
                                                 else if (sSound.Length > 0)
                                                 {
-                                                    PlayWaveFile?.Invoke(sSound);
+                                                    Audio?.PlayWaveFile(sSound);
                                                 }
                                             }
 
@@ -1581,7 +1614,7 @@ namespace GenieClient.Genie
                                                 string sSound = GetArgumentString(sRow);
                                                 if (sSound.Length > 0)
                                                 {
-                                                    PlayWaveSystem?.Invoke(sSound);
+                                                    Audio?.PlayWaveSystem(sSound);
                                                 }
                                             }
 
@@ -1605,14 +1638,14 @@ namespace GenieClient.Genie
                                                         case "load":
                                                             {
                                                                 EchoText("Macros Loaded" + System.Environment.NewLine);
-                                                                MacroLoad?.Invoke();
+                                                                oGlobals.MacroList.Load();
                                                                 break;
                                                             }
 
                                                         case "save":
                                                             {
                                                                 EchoText("Macros Saved" + System.Environment.NewLine);
-                                                                MacroSave?.Invoke();
+                                                                oGlobals.MacroList.Save();
                                                                 break;
                                                             }
 
@@ -1638,7 +1671,7 @@ namespace GenieClient.Genie
                                                 }
                                             }
                                             // Add
-                                            else if (MacroAdd != null && MacroAdd(oArgs[1].ToString(), oArgs[2].ToString()) == false)
+                                            else if (oGlobals.MacroList.Add(oArgs[1].ToString(), oArgs[2].ToString()) == false)
                                             {
                                                 EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                             }
@@ -1650,7 +1683,7 @@ namespace GenieClient.Genie
                                         {
                                             if (oArgs.Count > 1)
                                             {
-                                                if (MacroRemove != null && MacroRemove(oArgs[1].ToString()) == -1)
+                                                if (oGlobals.MacroList.Remove(oArgs[1].ToString()) == -1)
                                                 {
                                                     EchoText("Unknown key combination: " + oArgs[1].ToString() + System.Environment.NewLine);
                                                 }
@@ -3384,8 +3417,8 @@ namespace GenieClient.Genie
                     {
                         if (bUsePattern == false | de.Value.ToString().Contains(sPattern))
                         {
-                            string keyName = MacroKeyToString != null ? MacroKeyToString(de.Key) : de.Key.ToString();
-                            string action = MacroValueAction != null ? MacroValueAction(de.Value) : de.Value.ToString();
+                            string keyName = ((KeyCode.Keys)Conversions.ToInteger(de.Key)).ToString();
+                            string action = ((Macros.Macro)de.Value).sAction;
                             EchoText(keyName + "=" + action + System.Environment.NewLine);
                             I += 1;
                         }

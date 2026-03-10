@@ -10,43 +10,17 @@ using static GenieClient.My.MyProject;
 
 namespace GenieClient.Mapper
 {
-    public partial class MapForm : Form
+    public partial class MapForm : Form, IMapView
     {
         public event ListResetEventHandler ListReset;
-
-        public delegate void ListResetEventHandler();
-
         public event ToggleRecordEventHandler ToggleRecord;
-
-        public delegate void ToggleRecordEventHandler(bool toggle);
-
         public event EchoMapPathEventHandler EchoMapPath;
-
-        public delegate void EchoMapPathEventHandler();
-
         public event MoveMapPathEventHandler MoveMapPath;
-
-        public delegate void MoveMapPathEventHandler();
-
         public event ToggleAllowDuplicatesEventHandler ToggleAllowDuplicates;
-
-        public delegate void ToggleAllowDuplicatesEventHandler(bool toggle);
-
         public event MapLoadedEventHandler MapLoaded;
-
-        public delegate void MapLoadedEventHandler();
-
         public event ZoneIDChangeEventHandler ZoneIDChange;
-
-        public delegate void ZoneIDChangeEventHandler(string zoneid);
-
         public event ZoneNameChangeEventHandler ZoneNameChange;
-
-        public delegate void ZoneNameChangeEventHandler(string zonename);
-
         public event ClickNodeEventHandler ClickNode;
-
-        public delegate void ClickNodeEventHandler(string zoneid, int nodeid);
         private Genie.Globals m_oGlobals = null;
         private NodeList m_NodeList = null;
         private Node m_CurrentNode = null;
@@ -171,7 +145,7 @@ namespace GenieClient.Mapper
 
         private bool m_ShiftPress = false;
         private bool m_ControlPress = false;
-        public bool IsClosing = false;
+        public bool IsClosing { get; set; } = false;
 
         private void MapForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -676,11 +650,11 @@ namespace GenieClient.Mapper
                     string sColor = GetValue(xn, "color");
                     if (sColor.Length > 0)
                     {
-                        n.Color = Genie.ColorCode.StringToColor(sColor).ToDrawingColor();
+                        n.Color = Genie.ColorCode.StringToColor(sColor);
                     }
                     else
                     {
-                        n.Color = Color.Transparent;
+                        n.Color = GenieColor.Transparent;
                     }
 
                     var xPos = xn.SelectSingleNode("position");
@@ -933,7 +907,7 @@ namespace GenieClient.Mapper
                         xw.WriteAttributeString("name", n.Name);
                         if (n.Note.Length > 0)
                             xw.WriteAttributeString("note", n.Note);
-                        if (n.Color != Color.Transparent)
+                        if (n.Color != GenieColor.Transparent)
                             xw.WriteAttributeString("color", Genie.ColorCode.ColorToString(n.Color));
                         foreach (string s in n.Descriptions)
                         {
@@ -1217,9 +1191,9 @@ namespace GenieClient.Mapper
                 {
                     if (l.Position.Z == Z)
                     {
-                        if (X >= l.Rectangle.X && X < l.Rectangle.X + l.Rectangle.Width)
+                        if (X >= l.RectX && X < l.RectX + l.RectWidth)
                         {
-                            if (Y >= l.Rectangle.Y && Y < l.Rectangle.Y + l.Rectangle.Height)
+                            if (Y >= l.RectY && Y < l.RectY + l.RectHeight)
                             {
                                 oLabel = l;
                             }
@@ -1467,7 +1441,7 @@ namespace GenieClient.Mapper
                 PanelNodeDetails.TextBoxRoomName.Text = n.Name;
                 PanelNodeDetails.TextBoxDescription.Text = n.Descriptions.ToString();
                 PanelNodeDetails.TextBoxPosition.Text = n.Position.X.ToString() + ", " + n.Position.Y.ToString() + ", " + n.Position.Z.ToString();
-                PanelNodeDetails.ColorPicker1.Color = n.Color;
+                PanelNodeDetails.ColorPicker1.Color = n.Color.ToDrawingColor();
                 PanelNodeDetails.TextBoxNote.Text = n.Note;
                 PanelNodeDetails.ButtonApply.Text = "Apply";
                 PanelNodeDetails.ToolStripButtonNew.Enabled = true;
@@ -1658,8 +1632,8 @@ namespace GenieClient.Mapper
 
                     if (n.Position.Z < m_CurrentLevelZ)
                     {
-                        var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
+                        var oColorRoom = n.Color.ToDrawingColor();
+                        if (n.Color == GenieColor.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
                         else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
 
                         var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor();
@@ -1733,8 +1707,8 @@ namespace GenieClient.Mapper
 
                     if (n.Position.Z == m_CurrentLevelZ)
                     {
-                        var oColorRoom = n.Color;
-                        if (n.Color == Color.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
+                        var oColorRoom = n.Color.ToDrawingColor();
+                        if (n.Color == GenieColor.Transparent) { oColorRoom = m_oGlobals.PresetList["automapper.node"].FgColor.ToDrawingColor(); }
                         else oColorRoom = Color.FromArgb(m_oGlobals.Config.AutoMapperAlpha, n.Color.R, n.Color.G, n.Color.B);
                         var oColorRoomBorder = m_oGlobals.PresetList["automapper.line"].FgColor.ToDrawingColor();
                         if (n.Position.Z != m_CurrentLevelZ) // Mark all other levels gray
@@ -1825,21 +1799,14 @@ namespace GenieClient.Mapper
                 {
                     if (l.Position.Z == m_CurrentLevelZ)
                     {
-                        // If l.Rectangle.Width = 0 Then // SCALE AND EVERYTHING CHANGES. SET THIS FUCKER ON EACH REDRAW
-                        var r = new RectangleF();
-                        r.Height = 15;
+                        // SCALE AND EVERYTHING CHANGES. SET THIS ON EACH REDRAW
+                        l.RectHeight = 15;
 
                         var m_Offset = GetOffset();
-                        r.X = (l.Position.X * m_Scale) + m_Offset.X;
-                        r.Y = (l.Position.Y * m_Scale) + m_Offset.Y;
+                        l.RectX = (l.Position.X * m_Scale) + m_Offset.X;
+                        l.RectY = (l.Position.Y * m_Scale) + m_Offset.Y;
                         var size = e.Graphics.MeasureString(l.Text, LabelText);
-                        r.Width = size.Width;
-                        l.Rectangle = r;
-                        // End If
-
-                        // If r.X + r.Width >= PanelMap.Width Then
-                        // r.X = PanelMap.Width - r.Width
-                        // End If
+                        l.RectWidth = size.Width;
 
                         var b = Brushes.White;
                         var bt = new SolidBrush(m_oGlobals.PresetList["automapper.panel"].FgColor.ToDrawingColor());
@@ -1847,11 +1814,11 @@ namespace GenieClient.Mapper
                         {
                             b = Brushes.Blue;
                             bt = new SolidBrush(Color.White);
-                            e.Graphics.FillRectangle(b, l.Rectangle.X, l.Rectangle.Y, l.Rectangle.Width, l.Rectangle.Height);
-                            e.Graphics.DrawRectangle(Pens.Black, l.Rectangle.X, l.Rectangle.Y, l.Rectangle.Width, l.Rectangle.Height);
+                            e.Graphics.FillRectangle(b, l.RectX, l.RectY, l.RectWidth, l.RectHeight);
+                            e.Graphics.DrawRectangle(Pens.Black, l.RectX, l.RectY, l.RectWidth, l.RectHeight);
                         }
 
-                        e.Graphics.DrawString(l.Text, LabelText, bt, l.Rectangle.X + 1, l.Rectangle.Y + 1);
+                        e.Graphics.DrawString(l.Text, LabelText, bt, l.RectX + 1, l.RectY + 1);
                     }
                 }
             }
@@ -2074,12 +2041,12 @@ namespace GenieClient.Mapper
 
             if (!Information.IsNothing(m_NodeList) && m_NodeList.Count > 0) // No list = don't care
             {
-                var r = m_NodeList.GetMapSize();
-                r.Height *= m_Scale;
-                r.Width *= m_Scale;
-                r.Height += 5 * m_Scale;
-                r.Width += 5 * m_Scale;
-                if ((PanelBase.Width > r.Width) && (PanelBase.Height > r.Height))
+                var (mapW, mapH) = m_NodeList.GetMapSize();
+                mapH *= m_Scale;
+                mapW *= m_Scale;
+                mapH += 5 * m_Scale;
+                mapW += 5 * m_Scale;
+                if ((PanelBase.Width > mapW) && (PanelBase.Height > mapH))
                 {
                     if (PanelMap.Dock == DockStyle.None)
                     {
@@ -2101,8 +2068,8 @@ namespace GenieClient.Mapper
                         PanelMap.Top = 0;
                         PanelMap.Left = 0;
                     }
-                    PanelMap.Width = r.Width;
-                    PanelMap.Height = r.Height;
+                    PanelMap.Width = mapW;
+                    PanelMap.Height = mapH;
                 }
             }
             else if (PanelMap.Dock == DockStyle.None)

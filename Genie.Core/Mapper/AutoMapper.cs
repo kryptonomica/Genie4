@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Xml;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
@@ -15,19 +13,28 @@ namespace GenieClient.Mapper
     {
         public AutoMapper()
         {
-            m_Form = new MapForm(m_oGlobals);
         }
 
         public AutoMapper(ref Genie.Globals globals)
         {
-            m_Form = new MapForm(globals);
             m_oGlobals = globals;
-            CreateMapForm();
         }
+
+        public static Func<Genie.Globals, IMapView> CreateMapView { get; set; }
+        public static Action<AutoMapper> ShowHandler { get; set; }
+
+        public void SetView(IMapView view)
+        {
+            m_View = view;
+            m_View.ZoneID = get_GlobalVariable("zoneid");
+            m_View.ZoneName = get_GlobalVariable("zonename");
+        }
+
+        public IMapView View => m_View;
 
         public event EventEchoTextEventHandler EventEchoText;
 
-        public delegate void EventEchoTextEventHandler(string sText, Color oColor, Color oBgColor);
+        public delegate void EventEchoTextEventHandler(string sText, GenieColor oColor, GenieColor oBgColor);
 
         public event EventSendTextEventHandler EventSendText;
 
@@ -41,44 +48,44 @@ namespace GenieClient.Mapper
 
         public delegate void EventVariableChangedEventHandler(string sVariable);
 
-        private MapForm _m_Form;
+        private IMapView _m_View;
 
-        private MapForm m_Form
+        private IMapView m_View
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
             {
-                return _m_Form;
+                return _m_View;
             }
 
             [MethodImpl(MethodImplOptions.Synchronized)]
             set
             {
-                if (_m_Form != null)
+                if (_m_View != null)
                 {
-                    _m_Form.MapLoaded -= EventMapLoaded;
-                    _m_Form.ListReset -= GraphForm_ListReset;
-                    _m_Form.ClickNode -= GrapForm_ClickNode;
-                    _m_Form.ZoneIDChange -= GraphForm_ZoneIDChange;
-                    _m_Form.ZoneNameChange -= GraphForm_ZoneNameChange;
-                    _m_Form.ToggleRecord -= GraphForm_ToggleRecord;
-                    _m_Form.ToggleAllowDuplicates -= GraphForm_ToggleAllowDuplicates;
-                    _m_Form.EchoMapPath -= GraphForm_EchoMapPath;
-                    _m_Form.MoveMapPath -= GraphForm_MoveMapPath;
+                    _m_View.MapLoaded -= EventMapLoaded;
+                    _m_View.ListReset -= GraphForm_ListReset;
+                    _m_View.ClickNode -= GrapForm_ClickNode;
+                    _m_View.ZoneIDChange -= GraphForm_ZoneIDChange;
+                    _m_View.ZoneNameChange -= GraphForm_ZoneNameChange;
+                    _m_View.ToggleRecord -= GraphForm_ToggleRecord;
+                    _m_View.ToggleAllowDuplicates -= GraphForm_ToggleAllowDuplicates;
+                    _m_View.EchoMapPath -= GraphForm_EchoMapPath;
+                    _m_View.MoveMapPath -= GraphForm_MoveMapPath;
                 }
 
-                _m_Form = value;
-                if (_m_Form != null)
+                _m_View = value;
+                if (_m_View != null)
                 {
-                    _m_Form.MapLoaded += EventMapLoaded;
-                    _m_Form.ListReset += GraphForm_ListReset;
-                    _m_Form.ClickNode += GrapForm_ClickNode;
-                    _m_Form.ZoneIDChange += GraphForm_ZoneIDChange;
-                    _m_Form.ZoneNameChange += GraphForm_ZoneNameChange;
-                    _m_Form.ToggleRecord += GraphForm_ToggleRecord;
-                    _m_Form.ToggleAllowDuplicates += GraphForm_ToggleAllowDuplicates;
-                    _m_Form.EchoMapPath += GraphForm_EchoMapPath;
-                    _m_Form.MoveMapPath += GraphForm_MoveMapPath;
+                    _m_View.MapLoaded += EventMapLoaded;
+                    _m_View.ListReset += GraphForm_ListReset;
+                    _m_View.ClickNode += GrapForm_ClickNode;
+                    _m_View.ZoneIDChange += GraphForm_ZoneIDChange;
+                    _m_View.ZoneNameChange += GraphForm_ZoneNameChange;
+                    _m_View.ToggleRecord += GraphForm_ToggleRecord;
+                    _m_View.ToggleAllowDuplicates += GraphForm_ToggleAllowDuplicates;
+                    _m_View.EchoMapPath += GraphForm_EchoMapPath;
+                    _m_View.MoveMapPath += GraphForm_MoveMapPath;
                 }
             }
         }
@@ -100,9 +107,9 @@ namespace GenieClient.Mapper
         {
             get
             {
-                if (!Information.IsNothing(m_Form))
+                if (!Information.IsNothing(m_View))
                 {
-                    return m_Form.CharacterName;
+                    return m_View.CharacterName;
                 }
                 else
                 {
@@ -112,71 +119,46 @@ namespace GenieClient.Mapper
 
             set
             {
-                if (!Information.IsNothing(m_Form))
+                if (!Information.IsNothing(m_View))
                 {
-                    m_Form.CharacterName = value;
+                    m_View.CharacterName = value;
                 }
             }
         }
 
-        private FormMain m_ParentForm = null;
-
-        private void CreateMapForm()
+        private void EnsureView()
         {
-            m_Form = new MapForm(m_oGlobals);
-            m_Form.ZoneID = get_GlobalVariable("zoneid");
-            m_Form.ZoneName = get_GlobalVariable("zonename");
+            if (Information.IsNothing(m_View))
+            {
+                m_View = CreateMapView?.Invoke(m_oGlobals);
+            }
         }
 
         public bool IsClosing
         {
             get
             {
-                if (Information.IsNothing(m_Form))
+                if (Information.IsNothing(m_View))
                     return false;
-                return m_Form.IsClosing;
+                return m_View.IsClosing;
             }
 
             set
             {
-                m_Form.IsClosing = value;
+                if (!Information.IsNothing(m_View))
+                    m_View.IsClosing = value;
             }
         }
 
-        public void Show(FormMain parent = null)
+        public void Show()
         {
-            if (!Information.IsNothing(parent))
+            EnsureView();
+            bool wasVisible = !Information.IsNothing(m_View) && m_View.Visible;
+            ShowHandler?.Invoke(this);
+            if (!wasVisible && !Information.IsNothing(m_View))
             {
-                m_ParentForm = parent;
+                m_View.UpdateGraph(m_LastNode, m_Nodes, Direction.None);
             }
-
-            if (!Information.IsNothing(m_Form))
-            {
-                if (m_Form.Visible == false)
-                {
-                    if (!Information.IsNothing(parent))
-                    {
-                        m_Form.MdiParent = parent;
-                    }
-                }
-            }
-
-            if (!m_Form.Visible)
-            {
-                if (!Information.IsNothing(parent))
-                {
-                    m_Form.Top = 0;
-                    m_Form.Height = parent.ClientHeight - SystemInformation.Border3DSize.Height * 2;
-                    Size clientSize = (Size)parent.ClientSize;
-                    m_Form.Left = Conversions.ToInteger(clientSize.Width / 2 - SystemInformation.Border3DSize.Width);
-                    m_Form.Width = Conversions.ToInteger(clientSize.Width - SystemInformation.Border3DSize.Width * 2 - m_Form.Left);
-                }
-
-                m_Form.Show();
-                m_Form.UpdateGraph(m_LastNode, m_Nodes, Direction.None);
-            }
-
-            m_Form.BringToFront();
         }
 
         // Not implemented
@@ -187,7 +169,8 @@ namespace GenieClient.Mapper
 
         public void UpdatePanelBackgroundColor()
         {
-            m_Form.UpdatePanelColor();
+            if (!Information.IsNothing(m_View))
+                m_View.UpdatePanelColor();
         }
 
         private Genie.Collections.ArrayList m_Movement = new Genie.Collections.ArrayList();
@@ -355,10 +338,9 @@ namespace GenieClient.Mapper
 
         private void UpdateCurrentRoom(bool bMapChanged = false)
         {
-            if (Information.IsNothing(m_Form))
-                m_Form = new MapForm(m_oGlobals);
-            if (Information.IsNothing(m_Form.NodeList))
-                m_Form.SetNodeList(m_Nodes);
+            EnsureView();
+            if (Information.IsNothing(m_View.NodeList))
+                m_View.SetNodeList(m_Nodes);
             m_RoomUpdated = false;
 
             // -----------------------------------------------------
@@ -509,7 +491,7 @@ namespace GenieClient.Mapper
                 if (sMap.Length > 0)
                 {
                     EchoText("[" + Name + "] Activating Map: " + sMap);
-                    if (m_Form.LoadXML(sMap) == true)
+                    if (m_View.LoadXML(sMap) == true)
                     {
                         UpdateCurrentRoom(true);
                         // iFindCount = m_Nodes.FindCount(oNode)
@@ -853,7 +835,7 @@ namespace GenieClient.Mapper
                         }
                     }
 
-                    if (m_Form.LoadXML(sFile) == true)
+                    if (m_View.LoadXML(sFile) == true)
                     {
                         UpdateCurrentRoom(true);
                         return;
@@ -866,9 +848,9 @@ namespace GenieClient.Mapper
             }
             else
             {
-                if (!Information.IsNothing(m_Form))
+                if (!Information.IsNothing(m_View))
                 {
-                    m_Form.UpdateGraph(oNode, m_Nodes, m_eLastMovement);
+                    m_View.UpdateGraph(oNode, m_Nodes, m_eLastMovement);
                 }
 
                 m_LastNode = oNode;
@@ -884,8 +866,8 @@ namespace GenieClient.Mapper
                     EchoText("roomid = " + oNode.ID.ToString());
                 set_GlobalVariable("roomid", oNode.ID.ToString());
                 set_GlobalVariable("roomnote", oNode.Note.ToString());
-                string roomColor = oNode.Color.Name;
-                if (roomColor.ToUpper() == "TRANSPARENT") roomColor = m_oGlobals.PresetList["automapper.node"].BgColor.Name;
+                string roomColor = oNode.Color.Name ?? "";
+                if (roomColor.ToUpper() == "TRANSPARENT") roomColor = m_oGlobals.PresetList["automapper.node"].BgColor.Name ?? "";
                 else if (roomColor.ToUpper().StartsWith("FF")) roomColor = $"#{roomColor.Substring(2)}";
                 set_GlobalVariable("roomcolor", roomColor);
                 if (oNode.ContainsArc(Direction.North))
@@ -998,7 +980,7 @@ namespace GenieClient.Mapper
         private bool m_DebugEnabled = false;
         private int m_TimeOutMS = 1500;
 
-        public void ParseCommand(string cmd, FormMain form)
+        public void ParseCommand(string cmd)
         {
             string sCmd = string.Empty;
             string sArg = string.Empty;
@@ -1016,14 +998,11 @@ namespace GenieClient.Mapper
 
             if (sCmd.Length > 0)
             {
-                if (Information.IsNothing(m_Form))
-                {
-                    m_Form = new MapForm(m_oGlobals);
-                }
+                EnsureView();
 
-                if (Information.IsNothing(m_Form.NodeList))
+                if (Information.IsNothing(m_View.NodeList))
                 {
-                    m_Form.SetNodeList(m_Nodes);
+                    m_View.SetNodeList(m_Nodes);
                 }
 
                 var switchExpr = sCmd.ToLower();
@@ -1043,7 +1022,7 @@ namespace GenieClient.Mapper
                                     sArg += ".xml";
                                 }
 
-                                if (m_Form.LoadXML(sArg) == true)
+                                if (m_View.LoadXML(sArg) == true)
                                 {
                                     EchoText("[" + Name + "] Successfully loaded map: " + sArg, true);
                                     UpdateCurrentRoom(true);
@@ -1071,7 +1050,7 @@ namespace GenieClient.Mapper
                                 {
                                     sArg += ".xml";
                                 }
-                                if (m_Form.SaveXML(sArg) == false)
+                                if (m_View.SaveXML(sArg) == false)
                                 {
                                     EchoText("[" + Name + "] Failed to save map: " + sArg, true);
                                 }
@@ -1083,13 +1062,13 @@ namespace GenieClient.Mapper
                             }
                             
                             // No file name specified, attempt to use current file name:
-                            if (m_Form.SaveXML() == false)
+                            if (m_View.SaveXML() == false)
                             {
-                                EchoText("[" + Name + "] Failed to save map: " + m_Form.MapFile, true);
+                                EchoText("[" + Name + "] Failed to save map: " + m_View.MapFile, true);
                             }
                             else
                             {
-                                EchoText("[" + Name + "] Map saved: " + m_Form.MapFile, true);
+                                EchoText("[" + Name + "] Map saved: " + m_View.MapFile, true);
                             }
                             break;
                         }
@@ -1097,7 +1076,7 @@ namespace GenieClient.Mapper
                     case "clear":
                         {
                             EchoText("[" + Name + "] Clearing map.", true);
-                            m_Form.ClearMap();
+                            m_View.ClearMap();
                             break;
                         }
 
@@ -1105,7 +1084,7 @@ namespace GenieClient.Mapper
                         {
                             EchoText("[" + Name + "] Resetting.", true);
                             m_LastNode = null;
-                            m_Form.ClearMap();
+                            m_View.ClearMap();
                             UpdateCurrentRoom();
                             break;
                         }
@@ -1116,7 +1095,7 @@ namespace GenieClient.Mapper
                             {
                                 bool recordSetting = StringToBoolean(sArg);
                                 EchoText("[" + Name + "] Record " + recordSetting, true);
-                                m_Form.SetRecordToggle(recordSetting);
+                                m_View.SetRecordToggle(recordSetting);
                                 break;
                             }
                             EchoText("[" + Name + "] Record - need to specify true or false.", true);
@@ -1127,7 +1106,7 @@ namespace GenieClient.Mapper
                     case "locknodes":
                         {
                             if (sArg.Length > 0)
-                                m_Form.SetLockPositionsToggle(StringToBoolean(sArg));
+                                m_View.SetLockPositionsToggle(StringToBoolean(sArg));
                             break;
                         }
 
@@ -1136,7 +1115,7 @@ namespace GenieClient.Mapper
                             if (sArg.Length > 0) {
                                 bool snapSetting = StringToBoolean(sArg);
                                 EchoText("[" + Name + "] Snap to grid - " + snapSetting, true);
-                                m_Form.SetSnapToggle(snapSetting);
+                                m_View.SetSnapToggle(snapSetting);
                                 break;
                             }
                             EchoText("[" + Name + "] Snap - need to specify true or false.", true);
@@ -1149,7 +1128,7 @@ namespace GenieClient.Mapper
                             {
                                 bool dupesSetting = StringToBoolean(sArg);
                                 EchoText("[" + Name + "] Allowdupes - " + dupesSetting, true);
-                                m_Form.SetAllowDuplicatesToggle(dupesSetting);
+                                m_View.SetAllowDuplicatesToggle(dupesSetting);
                                 break;
                             }
                             EchoText("[" + Name + "] Allowdupes - need to specify true or false.", true);
@@ -1164,9 +1143,9 @@ namespace GenieClient.Mapper
 
                     case "hide":
                         {
-                            if (!Information.IsNothing(m_Form))
+                            if (!Information.IsNothing(m_View))
                             {
-                                m_Form.Close();
+                                m_View.Close();
                             }
                             break;
                         }
@@ -1286,13 +1265,13 @@ namespace GenieClient.Mapper
                             {
                                 // selecting multiple nodes doesn't seem to work
                                 string[] splitArgs = sArg.Split('|');
-                                m_Form.SelectNodes(splitArgs[0], splitArgs[1]);
+                                m_View.SelectNodes(splitArgs[0], splitArgs[1]);
                                 EchoText("[" + Name + "] Selected nodes " + splitArgs[0] + " and " + splitArgs[1]  + ".", true);
                             }
                             else
                             {
                                 EchoText("[" + Name + "] Selected node " + sArg + ".", true);
-                                m_Form.SelectNodes(sArg);
+                                m_View.SelectNodes(sArg);
                             }
                             break;
                         }
@@ -1304,7 +1283,7 @@ namespace GenieClient.Mapper
                                 // delete the room the player is in:
                                 if (!Information.IsNothing(m_LastNode))
                                 {
-                                    m_Form.EraseRoom(m_LastNode);
+                                    m_View.EraseRoom(m_LastNode);
                                     EchoText("[" + Name + "] Deleting current room (" + m_LastNode.ID + ")", true);
                                 } else
                                 {
@@ -1321,7 +1300,7 @@ namespace GenieClient.Mapper
                                     var n = m_Nodes.Find(iNodeID);
                                     if (!Information.IsNothing(n))
                                     {
-                                        m_Form.EraseRoom(n);
+                                        m_View.EraseRoom(n);
                                         EchoText("[" + Name + "] Delete - removed room \"" + iNodeID + "\".", true);
                                     }
                                     else
@@ -1376,10 +1355,10 @@ namespace GenieClient.Mapper
                                 if (sArg.Length > 0)
                                 {
                                     EchoText("[" + Name + "] Color set for current room: " + sArg, true);
-                                    m_LastNode.Color = Genie.ColorCode.StringToColor(sArg).ToDrawingColor();
-                                    if (!Information.IsNothing(m_Form))
+                                    m_LastNode.Color = Genie.ColorCode.StringToColor(sArg);
+                                    if (!Information.IsNothing(m_View))
                                     {
-                                        m_Form.UpdateGraph(m_LastNode, m_Nodes, m_eLastMovement);
+                                        m_View.UpdateGraph(m_LastNode, m_Nodes, m_eLastMovement);
                                     }
                                 }
                             } else
@@ -1405,12 +1384,12 @@ namespace GenieClient.Mapper
                         {
                             if (sArg.Length == 0)
                             {
-                                EchoText("[" + Name + "] Zone ID: " + m_Form.ZoneID, true);
+                                EchoText("[" + Name + "] Zone ID: " + m_View.ZoneID, true);
                             }
                             else
                             {
                                 EchoText("[" + Name + "] Zone ID set to: " + sArg, true);
-                                m_Form.ZoneID = sArg;
+                                m_View.ZoneID = sArg;
                             }
 
                             break;
@@ -1421,13 +1400,13 @@ namespace GenieClient.Mapper
                         {
                             if (sArg.Length == 0)
                             {
-                                EchoText("[" + Name + "] Zone name: " + m_Form.ZoneName, true);
+                                EchoText("[" + Name + "] Zone name: " + m_View.ZoneName, true);
                             }
                             else
                             {
                                 EchoText("[" + Name + "] Zone name set to: " + sArg, true);
-                                m_Form.ZoneName = sArg;
-                                m_Form.UpdateMainWindowTitle();
+                                m_View.ZoneName = sArg;
+                                m_View.UpdateMainWindowTitle();
                             }
 
                             break;
@@ -1459,9 +1438,9 @@ namespace GenieClient.Mapper
                                     {
                                         set_GlobalVariable("roomid", ID.ToString());
                                         EchoText("[" + Name + "] Current node set to #" + ID.ToString(), true);
-                                        if (!Information.IsNothing(m_Form))
+                                        if (!Information.IsNothing(m_View))
                                         {
-                                            m_Form.UpdateGraph(oNode, m_Nodes, m_eLastMovement);
+                                            m_View.UpdateGraph(oNode, m_Nodes, m_eLastMovement);
                                         }
 
                                         m_LastNode = oNode;
@@ -1620,17 +1599,17 @@ namespace GenieClient.Mapper
             }
             else
             {
-                Show(form);
+                Show();
             }
         }
 
         private void GetNodePath(Node n)
         {
-            m_Form.SetDestinationNode(n);
+            m_View.SetDestinationNode(n);
             if (!Information.IsNothing(m_LastNode))
             {
                 m_Nodes.FindShortestPath(m_LastNode, n);
-                m_Form.UpdateMap();
+                m_View.UpdateMap();
                 if (m_Nodes.PathText.Length > 0)
                 {
                     EchoText("[" + Name + "] mapperpath: " + m_Nodes.PathVariableText, true);
@@ -1642,11 +1621,11 @@ namespace GenieClient.Mapper
 
         private void WalkToNode(Node n)
         {
-            m_Form.SetDestinationNode(n);
+            m_View.SetDestinationNode(n);
             if (!Information.IsNothing(m_LastNode))
             {
                 m_Nodes.FindShortestPath(m_LastNode, n);
-                m_Form.UpdateMap();
+                m_View.UpdateMap();
                 if (m_Nodes.PathText.Length > 0)
                 {
                     if (m_DebugEnabled == true)
@@ -2018,9 +1997,9 @@ namespace GenieClient.Mapper
 
         public void EchoText(string Text, bool AlwaysEcho = false)
         {
-            if (AlwaysEcho == false && (Information.IsNothing(m_Form) || m_Form.Visible == false))
+            if (AlwaysEcho == false && (Information.IsNothing(m_View) || m_View.Visible == false))
                 return;
-            EventEchoText?.Invoke(Text + System.Environment.NewLine, Color.Cyan, Color.Transparent);
+            EventEchoText?.Invoke(Text + System.Environment.NewLine, GenieColor.Cyan, GenieColor.Transparent);
         }
 
         public void SendText(string Text)

@@ -4,7 +4,10 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace GenieClient.Genie
 {
-    public partial class KeyCode
+    // WinForms-specific extension — Core defines the main KeyCode class with Keys enum,
+    // StringToPortableKey, and StringToKeyConverter.
+    // This file adds only the WinForms StringToKey method as a static helper.
+    public static class KeyCodeWinForms
     {
         public static System.Windows.Forms.Keys StringToKey(string sHotkey)
         {

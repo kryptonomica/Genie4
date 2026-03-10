@@ -2,10 +2,23 @@ using System;
 
 namespace GenieClient.Genie
 {
-    public partial class KeyCode
+    public class KeyCode
     {
+        public static Func<string, KeyCode.Keys> StringToKeyConverter { get; set; }
+
+        public static KeyCode.Keys StringToPortableKey(string sHotkey)
+        {
+            if (StringToKeyConverter != null)
+                return StringToKeyConverter(sHotkey);
+            // Portable fallback: handle canonical enum names (comma-separated flags)
+            if (Enum.TryParse<KeyCode.Keys>(sHotkey, true, out var result))
+                return result;
+            return KeyCode.Keys.None;
+        }
+
         public enum Keys
         {
+            None = 0,
             A = 65,
             Add = 107,
             Alt = 262144,

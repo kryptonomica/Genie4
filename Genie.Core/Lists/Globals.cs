@@ -50,7 +50,7 @@ namespace GenieClient.Genie
     public Events Events = new Events();
         public CommandQueue CommandQueue = new CommandQueue();
         public Aliases AliasList = new Aliases();
-        public Collections.SortedList MacroList;
+        public Macros MacroList = new Macros();
         public Names NameList = new Names();
         public Classes ClassList = new Classes();
         public Triggers TriggerList = new Triggers();

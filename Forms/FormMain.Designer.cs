@@ -909,6 +909,7 @@ namespace GenieClient
             // 
             // checkForUpdatesToolStripMenuItem
             // 
+            checkForUpdatesToolStripMenuItem.Enabled = false;
             checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
             checkForUpdatesToolStripMenuItem.Size = new Size(211, 22);
             checkForUpdatesToolStripMenuItem.Text = "Check For &Updates";
@@ -916,6 +917,7 @@ namespace GenieClient
             // 
             // forceUpdateToolStripMenuItem
             // 
+            forceUpdateToolStripMenuItem.Enabled = false;
             forceUpdateToolStripMenuItem.Name = "forceUpdateToolStripMenuItem";
             forceUpdateToolStripMenuItem.Size = new Size(211, 22);
             forceUpdateToolStripMenuItem.Text = "&Force Update";
@@ -935,6 +937,7 @@ namespace GenieClient
             // 
             // autoUpdateToolStripMenuItem
             // 
+            autoUpdateToolStripMenuItem.Enabled = false;
             autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
             autoUpdateToolStripMenuItem.Size = new Size(211, 22);
             autoUpdateToolStripMenuItem.Text = "&AutoUpdate";
@@ -953,6 +956,7 @@ namespace GenieClient
             // 
             checkUpdatesOnStartupToolStripMenuItem.Checked = true;
             checkUpdatesOnStartupToolStripMenuItem.CheckState = CheckState.Checked;
+            checkUpdatesOnStartupToolStripMenuItem.Enabled = false;
             checkUpdatesOnStartupToolStripMenuItem.Name = "checkUpdatesOnStartupToolStripMenuItem";
             checkUpdatesOnStartupToolStripMenuItem.Size = new Size(211, 22);
             checkUpdatesOnStartupToolStripMenuItem.Text = "&Check Updates on Startup";

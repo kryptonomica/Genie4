@@ -3,9 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections;
+using System.Drawing;
 using System.Windows.Forms;
 using GenieClient.Genie;
-using Microsoft.VisualBasic.CompilerServices;
+using GenieClient.Mapper;
 
 namespace GenieClient
 {
@@ -21,22 +22,24 @@ namespace GenieClient
             LocalDirectory.ApplicationVersion = Application.ProductVersion;
             CoreError.ErrorHandler = GenieError.Error;
 
+            // Key converter callback (WinForms KeysConverter → portable Keys enum)
+            KeyCode.StringToKeyConverter = sHotkey =>
+                (KeyCode.Keys)(int)KeyCodeWinForms.StringToKey(sHotkey);
+
             // Connection callbacks
             Connection.OnExitRequested = Application.Exit;
 
+            // Audio service (shared by Game and Command)
+            var audio = new WinFormsAudioService();
+            Game.Audio = audio;
+            Command.Audio = audio;
+
             // Game callbacks
-            Game.PlaySound = Sound.PlayWaveFile;
             Game.FetchImageHandler = FileHandler.FetchImage;
             Game.ParsePluginTextHandler = ParsePluginText;
 
-            // Command callbacks — Sound
-            Command.PlayWaveFile = Sound.PlayWaveFile;
-            Command.PlayWaveSystem = Sound.PlayWaveSystem;
-            Command.StopPlaying = Sound.StopPlaying;
-
-            // Command callbacks — Macros (wired after MacroList is created by FormMain)
-            Command.MacroKeyToString = key => ((Keys)Conversions.ToInteger(key)).ToString();
-            Command.MacroValueAction = val => ((Macros.Macro)val).sAction;
+            // AutoMapper factory
+            AutoMapper.CreateMapView = globals => new MapForm(globals);
 
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
@@ -48,11 +51,25 @@ namespace GenieClient
             var services = host.Services;
             var formMain = services.GetRequiredService<FormMain>();
 
-            // Wire Macro callbacks now that FormMain (and MacroList) are created
-            Command.MacroSave = () => ((Macros)formMain.m_oGlobals.MacroList).Save();
-            Command.MacroLoad = () => ((Macros)formMain.m_oGlobals.MacroList).Load();
-            Command.MacroAdd = (key, action) => ((Macros)formMain.m_oGlobals.MacroList).Add(key, action);
-            Command.MacroRemove = key => ((Macros)formMain.m_oGlobals.MacroList).Remove(key);
+            // AutoMapper show handler (needs formMain reference for MDI layout)
+            AutoMapper.ShowHandler = mapper =>
+            {
+                var mapForm = mapper.View as MapForm;
+                if (mapForm == null) return;
+
+                if (!mapForm.Visible)
+                {
+                    mapForm.MdiParent = formMain;
+                    mapForm.Top = 0;
+                    mapForm.Height = formMain.ClientHeight - SystemInformation.Border3DSize.Height * 2;
+                    Size clientSize = (Size)formMain.ClientSize;
+                    mapForm.Left = Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(clientSize.Width / 2 - SystemInformation.Border3DSize.Width);
+                    mapForm.Width = Microsoft.VisualBasic.CompilerServices.Conversions.ToInteger(clientSize.Width - SystemInformation.Border3DSize.Width * 2 - mapForm.Left);
+                    mapForm.Show();
+                }
+
+                mapForm.BringToFront();
+            };
 
             formMain.DirectConnect(args);
             Application.Run(formMain);

@@ -17,7 +17,7 @@ namespace GenieClient.Genie
 {
     public class Game
     {
-        public static Action<string> PlaySound { get; set; }
+        public static IAudioService Audio { get; set; }
         public static Func<string, string, string, Task<bool>> FetchImageHandler { get; set; }
         public static Func<string, string, ArrayList, bool, string> ParsePluginTextHandler { get; set; }
 
@@ -2662,10 +2662,11 @@ namespace GenieClient.Genie
         // Confuse decompilers and reverse engineers by having this method in the middle of everything and no string names in it
         private void DoConnect(string sHostName, int iPort)
         {
-
+            SessionLogger.Instance.LogEvent("DoConnect: start " + sHostName + ":" + iPort);
             m_sEncryptionKey = string.Empty;
             m_oConnectState = ConnectStates.ConnectingKeyServer;
             m_oSocket.ConnectAndAuthenticate(sHostName, iPort);
+            SessionLogger.Instance.LogEvent("DoConnect: ConnectAndAuthenticate returned");
             
         }
 
@@ -2743,7 +2744,7 @@ namespace GenieClient.Genie
                                     bgcolor = o.BgColor;
                                     m_oLastFgColor = color;
                                     if (o.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
-                                        PlaySound?.Invoke(o.SoundFile);
+                                        Audio?.PlayWaveFile(o.SoundFile);
                                 }
                             }
                         }
@@ -2772,7 +2773,7 @@ namespace GenieClient.Genie
                             bgcolor = oHighlightString.BgColor;
                             m_oLastFgColor = color;
                             if (oHighlightString.SoundFile.Length > 0 && m_oGlobals.Config.bPlaySounds)
-                                PlaySound?.Invoke(oHighlightString.SoundFile);
+                                Audio?.PlayWaveFile(oHighlightString.SoundFile);
                         }
                     }
                 }
@@ -3163,14 +3164,20 @@ namespace GenieClient.Genie
 
         private void GameSocket_EventConnected()
         {
+            SessionLogger.Instance.LogEvent("GameSocket_EventConnected: state=" + m_oConnectState);
             var switchExpr = m_oConnectState;
             switch (switchExpr)
             {
                 case ConnectStates.ConnectingKeyServer:
                     {
                         m_oConnectState = ConnectStates.ConnectedKey;
-                        m_oSocket.Authenticate(AccountName, AccountPassword);
-                        ParseKeyRow(m_oSocket.GetLoginKey(AccountGame, AccountCharacter));
+                        SessionLogger.Instance.LogEvent("Calling Authenticate...");
+                        var authResult = m_oSocket.Authenticate(AccountName, AccountPassword);
+                        SessionLogger.Instance.LogEvent("Authenticate returned: " + authResult);
+                        SessionLogger.Instance.LogEvent("Calling GetLoginKey...");
+                        var loginKey = m_oSocket.GetLoginKey(AccountGame, AccountCharacter);
+                        SessionLogger.Instance.LogEvent("GetLoginKey returned: " + (loginKey?.Substring(0, Math.Min(loginKey.Length, 30)) ?? "null"));
+                        ParseKeyRow(loginKey);
                         break;
                     }
 

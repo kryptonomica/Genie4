@@ -156,6 +156,7 @@ namespace GenieClient.Genie
                 m_SocketClient = _client.Client;
                 _client.Connect(sHostname, iPort);
                 m_oLastServerActivity = DateTime.Now;
+                SessionLogger.Instance.LogEvent("Connected (plain TCP) to " + sHostname + ":" + iPort);
                 PrintText(Utility.GetTimeStamp() + " Connected to " + m_sHostname + ".");
                 Recieve(_client);
                 EventConnected?.Invoke();
@@ -186,28 +187,54 @@ namespace GenieClient.Genie
                 m_sHostname = sHostname;
                 _client = new TcpClient();
                 m_SocketClient = _client.Client;
-                
+
+                DebugLog("ConnectAndAuthenticate: DNS lookup...");
                 var hostEntryList = Dns.GetHostEntry(sHostname);
                 m_IPEndPoint = new IPEndPoint(hostEntryList.AddressList.Where(i => i.AddressFamily == AddressFamily.InterNetwork).FirstOrDefault(), iPort);
+                DebugLog("ConnectAndAuthenticate: TCP connecting...");
                 _client.Connect(sHostname, iPort);
+                DebugLog("ConnectAndAuthenticate: TCP connected");
                 m_oLastServerActivity = DateTime.Now;
                 try
                 {
-                    sslStream = new SslStream(_client.GetStream(), true, new RemoteCertificateValidationCallback(Utility.ValidateServerCertificate), null);
+                    DebugLog("ConnectAndAuthenticate: creating SslStream...");
+                    sslStream = new SslStream(_client.GetStream(), true, new RemoteCertificateValidationCallback(ValidateServerCertificateWithLogging), null);
                     try
                     {
-                        sslStream.AuthenticateAsClient(m_sHostname, null, SslProtocols.Tls12, false);
+                        // Set socket-level timeouts so the TLS handshake cannot block forever
+                        _client.ReceiveTimeout = 15000; // 15 seconds
+                        _client.SendTimeout = 15000;
+
+                        DebugLog("ConnectAndAuthenticate: AuthenticateAsClient (SslProtocols.None = OS negotiated)...");
+                        // Use SslProtocols.None to let the OS negotiate the best available protocol.
+                        // Pinning to Tls12 can fail in .NET 10 due to reduced cipher suite support.
+                        sslStream.AuthenticateAsClient(m_sHostname, null, System.Security.Authentication.SslProtocols.None, false);
+                        DebugLog("ConnectAndAuthenticate: SSL authenticated OK, protocol=" + sslStream.SslProtocol);
+                        SessionLogger.Instance.LogEvent("SSL authenticated to " + sHostname + ":" + iPort + " protocol=" + sslStream.SslProtocol);
+
+                        // Restore default (infinite) timeouts for normal game data
+                        _client.ReceiveTimeout = 0;
+                        _client.SendTimeout = 0;
                     }
                     catch (AuthenticationException e)
                     {
+                        DebugLog("ConnectAndAuthenticate: SSL FAILED: " + e.Message);
+                        PrintError("Unable to Authenticate: " + e.Message);
+                        _client.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        DebugLog("ConnectAndAuthenticate: SSL exception: " + e.GetType().Name + ": " + e.Message);
                         PrintError("Unable to Authenticate: " + e.Message);
                         _client.Close();
                     }
                     // Complete the connection
-                    
+
                     PrintText(Utility.GetTimeStamp() + " Connected to " + m_sHostname + ".");
-                    
+
+                    DebugLog("ConnectAndAuthenticate: firing EventConnected");
                     EventConnected?.Invoke();
+                    DebugLog("ConnectAndAuthenticate: EventConnected handler returned");
                 }
                 catch (SocketException ex)
                 {
@@ -431,6 +458,7 @@ namespace GenieClient.Genie
                 bool ExitOnDisconnect = (bool)(ar.AsyncState as object[])[1];
                 // Complete the connection
                 s.EndDisconnect(ar);
+                SessionLogger.Instance.LogEvent("Disconnected from " + m_sHostname);
                 ParseData(System.Environment.NewLine); // Show lines not yet sent out
                 PrintText(Utility.GetTimeStamp() + " Connection closed.");
                 if (ExitOnDisconnect)
@@ -463,6 +491,7 @@ namespace GenieClient.Genie
                     return;
                 }
 
+                SessionLogger.Instance.LogSend(sText);
                 var ByteData = Encoding.Default.GetBytes(sText);
                 s.BeginSend(ByteData, 0, ByteData.Length, SocketFlags.None, new AsyncCallback(SendCallback), s);
             }
@@ -553,7 +582,10 @@ namespace GenieClient.Genie
                             return;
                         }
                         // Append data
-                        ParseData(Encoding.Default.GetString(oState.oBuffer, 0, bytes));
+                        var decoded = Encoding.Default.GetString(oState.oBuffer, 0, bytes);
+                        SessionLogger.Instance.LogReceive(decoded);
+                        SessionLogger.Instance.LogReceiveHex(oState.oBuffer, 0, bytes);
+                        ParseData(decoded);
                         // Event to update Output
                         DataRecieveEnd();
 
@@ -607,6 +639,7 @@ namespace GenieClient.Genie
 
         private void ParseRow(StringBuilder oText)
         {
+            SessionLogger.Instance.LogParsedRow(oText.ToString());
             // For Trigger Events
             EventParseRow?.Invoke(oText);
         }
@@ -638,6 +671,48 @@ namespace GenieClient.Genie
         {
             SocketErrorCodes sec = (SocketErrorCodes)errorcode;
             PrintError(Conversions.ToString(Utility.GetTimeStamp() + " " + text + ". (" + Interaction.IIf(Information.IsNothing(sec), "Unknown", sec.ToString()) + ")"));
+        }
+
+        private static string s_debugLogPath;
+
+        internal static void DebugLog(string msg)
+        {
+            try
+            {
+                if (s_debugLogPath == null)
+                {
+                    string dir = System.IO.Path.Combine(LocalDirectory.Path, "Logs", "Sessions");
+                    System.IO.Directory.CreateDirectory(dir);
+                    s_debugLogPath = System.IO.Path.Combine(dir, "genie_debug.log");
+                }
+                System.IO.File.AppendAllText(s_debugLogPath,
+                    DateTime.Now.ToString("HH:mm:ss.fff") + "  " + msg + Environment.NewLine);
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Wraps Utility.ValidateServerCertificate with debug logging so we can
+        /// trace whether the callback is reached during the TLS handshake.
+        /// </summary>
+        private static bool ValidateServerCertificateWithLogging(
+            object sender,
+            System.Security.Cryptography.X509Certificates.X509Certificate certificate,
+            System.Security.Cryptography.X509Certificates.X509Chain chain,
+            SslPolicyErrors sslPolicyErrors)
+        {
+            DebugLog("CertCallback: entered, policyErrors=" + sslPolicyErrors);
+            try
+            {
+                bool result = Utility.ValidateServerCertificate(sender, certificate, chain, sslPolicyErrors);
+                DebugLog("CertCallback: ValidateServerCertificate returned " + result);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                DebugLog("CertCallback: EXCEPTION " + ex.GetType().Name + ": " + ex.Message);
+                return false;
+            }
         }
     }
 }

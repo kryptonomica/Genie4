@@ -128,7 +128,7 @@ namespace GenieClient
                 UcPreset1.FormParent = oFormMain;
                 UcWindowSettings1.FormParent = oFormMain;
                 UcWindowSettings1.RefreshSettings();
-                UcMacros1.MacroList = (Genie.Macros)oFormMain.m_oGlobals.MacroList;
+                UcMacros1.MacroList = oFormMain.m_oGlobals.MacroList;
                 UcAliases1.AliasList = oFormMain.m_oGlobals.AliasList;
                 UcSubs1.Globals = oFormMain.m_oGlobals;
                 UcSubs1.SubstituteList = oFormMain.m_oGlobals.SubstituteList;
