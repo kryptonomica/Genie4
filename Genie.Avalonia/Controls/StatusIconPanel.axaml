@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GenieClient.Avalonia.Controls.StatusIconPanel"
+             x:CompileBindings="False">
+  <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center">
+    <!-- Posture -->
+    <Border Name="PostureBorder" Background="#333333" CornerRadius="3"
+            Padding="5,2" MinWidth="30">
+      <TextBlock Name="PostureText" Text="ST" Foreground="LimeGreen"
+                 HorizontalAlignment="Center" FontSize="11" FontWeight="Bold" />
+    </Border>
+
+    <!-- Status effects — hidden when inactive -->
+    <Border Name="StunnedBorder" Background="#553300" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="STUN" Foreground="Yellow" FontSize="10" FontWeight="Bold" />
+    </Border>
+
+    <Border Name="BleedingBorder" Background="#550000" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="BLEED" Foreground="Red" FontSize="10" FontWeight="Bold" />
+    </Border>
+
+    <Border Name="InvisibleBorder" Background="#003333" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="INVIS" Foreground="Cyan" FontSize="10" FontWeight="Bold" />
+    </Border>
+
+    <Border Name="HiddenBorder" Background="#333333" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="HIDE" Foreground="#AAAAAA" FontSize="10" FontWeight="Bold" />
+    </Border>
+
+    <Border Name="JoinedBorder" Background="#002244" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="JOIN" Foreground="DodgerBlue" FontSize="10" FontWeight="Bold" />
+    </Border>
+
+    <Border Name="WebbedBorder" Background="#220033" CornerRadius="3"
+            Padding="4,2" IsVisible="False">
+      <TextBlock Text="WEB" Foreground="MediumPurple" FontSize="10" FontWeight="Bold" />
+    </Border>
+  </StackPanel>
+</UserControl>

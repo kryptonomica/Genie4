@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GenieClient.Avalonia.Controls.VitalBar"
+             x:CompileBindings="False"
+             Height="20">
+  <Grid>
+    <ProgressBar Name="Bar" Minimum="0" Maximum="100" Value="100"
+                 CornerRadius="0"
+                 Background="#222222"
+                 Foreground="Maroon" />
+    <TextBlock Name="Label" Text=""
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Foreground="White" FontSize="11" />
+  </Grid>
+</UserControl>

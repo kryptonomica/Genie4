@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="GenieClient.Avalonia.Views.ConnectDialog"
+        Title="Connect to Game"
+        Width="360" Height="300"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+  <StackPanel Margin="20" Spacing="10">
+    <TextBlock Text="Account:" />
+    <TextBox Name="AccountBox" Watermark="Account name" />
+
+    <TextBlock Text="Password:" />
+    <TextBox Name="PasswordBox" PasswordChar="*" Watermark="Password" />
+
+    <TextBlock Text="Character:" />
+    <TextBox Name="CharacterBox" Watermark="Character name" />
+
+    <TextBlock Text="Game:" />
+    <ComboBox Name="GameBox" SelectedIndex="0" HorizontalAlignment="Stretch">
+      <ComboBoxItem Content="DR" />
+      <ComboBoxItem Content="DRX" />
+      <ComboBoxItem Content="DRT" />
+      <ComboBoxItem Content="DRF" />
+      <ComboBoxItem Content="GS" />
+    </ComboBox>
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+      <Button Name="ConnectButton" Content="Connect" IsDefault="True" Width="90" />
+      <Button Name="CancelButton" Content="Cancel" IsCancel="True" Width="90" />
+    </StackPanel>
+  </StackPanel>
+</Window>

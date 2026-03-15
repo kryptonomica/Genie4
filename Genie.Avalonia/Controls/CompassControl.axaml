@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GenieClient.Avalonia.Controls.CompassControl"
+             x:CompileBindings="False"
+             Width="72" Height="72">
+  <Grid RowDefinitions="20,32,20" ColumnDefinitions="24,24,24"
+        Background="Transparent">
+    <!-- Row 0: NW, N, NE -->
+    <TextBlock Grid.Row="0" Grid.Column="0" Name="DirNW" Text="NW"
+               FontSize="10" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TextBlock Grid.Row="0" Grid.Column="1" Name="DirN" Text="N"
+               FontSize="11" FontWeight="Bold" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TextBlock Grid.Row="0" Grid.Column="2" Name="DirNE" Text="NE"
+               FontSize="10" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+    <!-- Row 1: W, center (U/D/O), E -->
+    <TextBlock Grid.Row="1" Grid.Column="0" Name="DirW" Text="W"
+               FontSize="11" FontWeight="Bold" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+                HorizontalAlignment="Center" Spacing="1">
+      <TextBlock Name="DirUp" Text="U" FontSize="9" Foreground="LimeGreen" Opacity="0.15"
+                 HorizontalAlignment="Center" />
+      <TextBlock Name="DirDn" Text="D" FontSize="9" Foreground="LimeGreen" Opacity="0.15"
+                 HorizontalAlignment="Center" />
+      <TextBlock Name="DirOut" Text="O" FontSize="9" Foreground="Orange" Opacity="0.15"
+                 HorizontalAlignment="Center" />
+    </StackPanel>
+    <TextBlock Grid.Row="1" Grid.Column="2" Name="DirE" Text="E"
+               FontSize="11" FontWeight="Bold" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+    <!-- Row 2: SW, S, SE -->
+    <TextBlock Grid.Row="2" Grid.Column="0" Name="DirSW" Text="SW"
+               FontSize="10" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TextBlock Grid.Row="2" Grid.Column="1" Name="DirS" Text="S"
+               FontSize="11" FontWeight="Bold" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TextBlock Grid.Row="2" Grid.Column="2" Name="DirSE" Text="SE"
+               FontSize="10" Foreground="Cyan" Opacity="0.15"
+               HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </Grid>
+</UserControl>

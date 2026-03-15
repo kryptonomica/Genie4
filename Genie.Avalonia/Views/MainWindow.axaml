@@ -1,0 +1,107 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:GenieClient.Avalonia.Controls"
+        xmlns:dc="clr-namespace:Dock.Avalonia.Controls;assembly=Dock.Avalonia"
+        x:Class="GenieClient.Avalonia.Views.MainWindow"
+        Title="Genie 4"
+        Width="1000" Height="750"
+        Background="#1E1E1E">
+  <DockPanel>
+    <!-- Menu Bar -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Name="MenuConnect" Header="_Connect..." />
+        <MenuItem Name="MenuDisconnect" Header="_Disconnect" IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="Open Directory">
+          <MenuItem Name="MenuOpenGenieDir" Header="Genie" />
+          <MenuItem Name="MenuOpenScriptsDir" Header="Scripts" />
+          <MenuItem Name="MenuOpenMapsDir" Header="Maps" />
+          <MenuItem Name="MenuOpenLogsDir" Header="Logs" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Name="MenuAutoLog" Header="_Auto Log" />
+        <MenuItem Name="MenuAutoReconnect" Header="Auto _Reconnect" />
+        <Separator />
+        <MenuItem Header="Toggles">
+          <MenuItem Name="MenuIgnoresEnabled" Header="_Ignores/Gags Enabled" />
+          <MenuItem Name="MenuTriggersEnabled" Header="_Triggers Enabled" />
+          <MenuItem Name="MenuPluginsEnabled" Header="_Plugins Enabled" />
+          <MenuItem Name="MenuAutoMapperEnabled" Header="Auto_Mapper Enabled" />
+          <MenuItem Name="MenuMuteSounds" Header="_Mute Sounds" />
+          <MenuItem Name="MenuShowRaw" Header="Show _Raw Data" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Name="MenuExit" Header="E_xit" />
+      </MenuItem>
+
+      <MenuItem Header="_Edit">
+        <MenuItem Name="MenuPasteMultiLine" Header="Paste _Multi Line" />
+        <Separator />
+        <MenuItem Name="MenuConfiguration" Header="_Configuration..." IsEnabled="False" />
+      </MenuItem>
+
+      <MenuItem Header="_Profile">
+        <MenuItem Name="MenuLoadProfile" Header="_Load Profile..." />
+        <MenuItem Name="MenuSaveProfile" Header="_Save Profile" />
+        <Separator />
+        <MenuItem Name="MenuSavePassword" Header="Include _Password In Profile"
+                  ToggleType="CheckBox" IsChecked="True" />
+      </MenuItem>
+
+      <MenuItem Header="_Layout">
+        <MenuItem Name="MenuLoadLayout" Header="Load Layout..." IsEnabled="False" />
+        <MenuItem Name="MenuSaveLayout" Header="Save Layout..." IsEnabled="False" />
+        <Separator />
+        <MenuItem Name="MenuAlwaysOnTop" Header="Always On Top" />
+      </MenuItem>
+
+      <MenuItem Header="_Script">
+        <MenuItem Name="MenuListScripts" Header="_Show Active Scripts" />
+        <MenuItem Name="MenuPauseAll" Header="_Pause All Scripts" />
+        <MenuItem Name="MenuResumeAll" Header="_Resume All Scripts" />
+        <MenuItem Name="MenuAbortAll" Header="_Abort All Scripts" />
+      </MenuItem>
+
+      <MenuItem Name="MenuWindow" Header="_Window">
+        <!-- Populated dynamically with show/hide toggles -->
+      </MenuItem>
+
+      <MenuItem Header="_AutoMapper">
+        <MenuItem Name="MenuShowMapper" Header="_Show Window" IsEnabled="False" />
+        <MenuItem Name="MenuMapperSettings" Header="Settings" IsEnabled="False" />
+      </MenuItem>
+
+      <MenuItem Header="_Help">
+        <MenuItem Name="MenuGitHub" Header="_GitHub" />
+        <MenuItem Name="MenuDiscord" Header="_Discord" />
+        <MenuItem Name="MenuDocs" Header="_Wiki" />
+        <MenuItem Name="MenuChangelog" Header="Latest _Release Page" />
+      </MenuItem>
+    </Menu>
+
+    <!-- Status Bar (very bottom) -->
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                Background="#2D2D2D" Height="24">
+      <TextBlock Name="StatusLabel" Text="Disconnected"
+                 VerticalAlignment="Center" Margin="8,0"
+                 Foreground="#AAAAAA" FontSize="12" />
+      <TextBlock Name="StatusBarText" Text=""
+                 VerticalAlignment="Center" Margin="8,0"
+                 Foreground="#CCCCCC" FontSize="12" />
+    </StackPanel>
+
+    <!-- Command Input -->
+    <controls:CommandInputBox Name="CommandInput" DockPanel.Dock="Bottom"
+                              Margin="4,2" />
+
+    <!-- Vital Bars -->
+    <controls:VitalBarsPanel Name="VitalBars" DockPanel.Dock="Bottom" />
+
+    <!-- Status Panel: RT, Cast, Compass, Icons, Hands, Spell -->
+    <controls:StatusPanel Name="HudPanel" DockPanel.Dock="Bottom" />
+
+    <!-- Dockable Game Output (fills remaining space) -->
+    <dc:DockControl Name="DockControl" />
+  </DockPanel>
+</Window>

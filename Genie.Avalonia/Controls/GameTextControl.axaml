@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:GenieClient.Avalonia.Controls"
+             xmlns:models="clr-namespace:GenieClient.Avalonia.Models"
+             x:Class="GenieClient.Avalonia.Controls.GameTextControl">
+  <ScrollViewer Name="ScrollViewer"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+    <ItemsControl Name="LinesControl">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <VirtualizingStackPanel />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="models:TextLine">
+          <local:ColoredTextBlock Segments="{Binding Segments}"
+                                  TextWrapping="Wrap"
+                                  Padding="4,0" />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
+</UserControl>

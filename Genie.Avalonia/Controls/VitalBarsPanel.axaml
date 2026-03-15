@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:GenieClient.Avalonia.Controls"
+             x:Class="GenieClient.Avalonia.Controls.VitalBarsPanel"
+             x:CompileBindings="False"
+             Height="20" Background="#111111">
+  <Grid ColumnDefinitions="*,*,*,*,*">
+    <controls:VitalBar Grid.Column="0" Name="HealthBar" Margin="0,0,1,0" />
+    <controls:VitalBar Grid.Column="1" Name="ManaBar" Margin="1,0,1,0" />
+    <controls:VitalBar Grid.Column="2" Name="FatigueBar" Margin="1,0,1,0" />
+    <controls:VitalBar Grid.Column="3" Name="SpiritBar" Margin="1,0,1,0" />
+    <controls:VitalBar Grid.Column="4" Name="ConcBar" Margin="1,0,0,0" />
+  </Grid>
+</UserControl>

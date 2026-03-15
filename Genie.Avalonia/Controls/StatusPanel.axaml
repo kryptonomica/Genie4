@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:GenieClient.Avalonia.Controls"
+             x:Class="GenieClient.Avalonia.Controls.StatusPanel"
+             x:CompileBindings="False"
+             Height="36" Background="#1A1A1A">
+  <Grid ColumnDefinitions="Auto,120,Auto,120,80,Auto,*,*,*" Margin="2,0">
+    <!-- Roundtime -->
+    <TextBlock Grid.Column="0" Text="RT" Foreground="#888888" FontSize="11" FontWeight="Bold"
+               VerticalAlignment="Center" Margin="4,0,2,0" />
+    <controls:RoundtimeBar Grid.Column="1" Name="RTBar" Margin="2" />
+
+    <!-- Casttime -->
+    <TextBlock Grid.Column="2" Text="Cast" Foreground="#888888" FontSize="11" FontWeight="Bold"
+               VerticalAlignment="Center" Margin="6,0,2,0" />
+    <controls:RoundtimeBar Grid.Column="3" Name="CastBar" Margin="2" />
+
+    <!-- Compass -->
+    <controls:CompassControl Grid.Column="4" Name="Compass" Margin="2"
+                              VerticalAlignment="Center" />
+
+    <!-- Status Icons -->
+    <controls:StatusIconPanel Grid.Column="5" Name="StatusIcons"
+                               Margin="4,0" VerticalAlignment="Center" />
+
+    <!-- Left Hand -->
+    <StackPanel Grid.Column="6" Orientation="Horizontal" Margin="4,0"
+                VerticalAlignment="Center">
+      <TextBlock Text="L:" Foreground="#888888" FontSize="11" Margin="0,0,3,0" />
+      <TextBlock Name="LeftHandLabel" Text="Empty" Foreground="#CCCCCC" FontSize="11" />
+    </StackPanel>
+
+    <!-- Right Hand -->
+    <StackPanel Grid.Column="7" Orientation="Horizontal" Margin="4,0"
+                VerticalAlignment="Center">
+      <TextBlock Text="R:" Foreground="#888888" FontSize="11" Margin="0,0,3,0" />
+      <TextBlock Name="RightHandLabel" Text="Empty" Foreground="#CCCCCC" FontSize="11" />
+    </StackPanel>
+
+    <!-- Spell -->
+    <StackPanel Grid.Column="8" Orientation="Horizontal" Margin="4,0"
+                VerticalAlignment="Center">
+      <TextBlock Text="Spell:" Foreground="#888888" FontSize="11" Margin="0,0,3,0" />
+      <TextBlock Name="SpellLabel" Text="None" Foreground="#CCCCCC" FontSize="11" />
+    </StackPanel>
+  </Grid>
+</UserControl>

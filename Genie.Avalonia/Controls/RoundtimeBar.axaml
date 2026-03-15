@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GenieClient.Avalonia.Controls.RoundtimeBar"
+             x:CompileBindings="False"
+             Height="28">
+  <Grid>
+    <ProgressBar Name="Bar" Minimum="0" Maximum="1000" Value="0"
+                 CornerRadius="0"
+                 Background="#111111"
+                 Foreground="MediumBlue">
+      <ProgressBar.Transitions>
+        <!-- disable animated transitions for real-time updates -->
+      </ProgressBar.Transitions>
+    </ProgressBar>
+    <TextBlock Name="Label" Text=""
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Foreground="White" FontSize="14" FontWeight="Bold" />
+  </Grid>
+</UserControl>
